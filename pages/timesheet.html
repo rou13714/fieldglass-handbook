@@ -30,39 +30,39 @@
       </div>
       <p class="page-eyebrow">Chapter 02</p>
       <h1 class="page-title"><strong>Timesheet</strong><br>出勤表填寫</h1>
-      <p class="page-desc">記得：沒有好好填，就沒有錢拿。每月最後一個上班日 23:59 前提交。</p>
+      <p class="page-desc">記得：沒有好好填，會影響到薪資！！每月最後一個上班日 23:59 前提交。</p>
     </div>
   </section>
 
   <div class="page-content">
 
     <!-- 流程 -->
-    <div class="content-section">
+    <div class="content-section" id="section-flow">
       <p class="section-label">Timesheet 流程</p>
-      <div class="flow">
-        <div class="flow-item"><div class="flow-bubble active">建立 Timesheet</div></div>
-        <div class="flow-item"><div class="flow-arrow">↓</div></div>
-        <div class="flow-item"><div class="flow-bubble">送出 Submit</div></div>
-        <div class="flow-item"><div class="flow-arrow">↓</div></div>
-        <div class="flow-item"><div class="flow-bubble">主管審核</div></div>
-        <div class="flow-item"><div class="flow-arrow">↓</div></div>
-        <div class="flow-item"><div class="flow-bubble">Agency 確認</div></div>
-        <div class="flow-item"><div class="flow-arrow">↓</div></div>
-        <div class="flow-item"><div class="flow-bubble">Paid ✓</div></div>
+      <div class="flow-h">
+        <a class="flow-bubble-h active" href="#section-create">建立 Timesheet</a>
+        <span class="flow-arrow-h">→</span>
+        <a class="flow-bubble-h" href="#section-submit">送出 Submit</a>
+        <span class="flow-arrow-h">→</span>
+        <div class="flow-bubble-h">主管審核</div>
+        <span class="flow-arrow-h">→</span>
+        <div class="flow-bubble-h">Agency 確認</div>
+        <span class="flow-arrow-h">→</span>
+        <div class="flow-bubble-h">Invoice ✓</div>
       </div>
     </div>
 
     <!-- 建立 -->
-    <div class="content-section">
+    <div class="content-section" id="section-create">
       <p class="section-label">建立 Timesheet</p>
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>建立方式</h3>
-          <div class="flow" style="margin-top:8px">
-            <div class="flow-item"><div class="flow-bubble active">Create</div></div>
-            <div class="flow-item"><div class="flow-arrow">↓</div></div>
-            <div class="flow-item"><div class="flow-bubble">Time Sheet</div></div>
+          <div class="flow-h" style="margin-top:8px">
+            <div class="flow-bubble-h active">Create</div>
+            <span class="flow-arrow-h">→</span>
+            <div class="flow-bubble-h">Time Sheet</div>
           </div>
           <div class="img-placeholder">截圖 — 待上傳</div>
         </div>
@@ -70,85 +70,89 @@
     </div>
 
     <!-- 填寫出勤 -->
-    <div class="content-section">
+    <div class="content-section" id="section-fillin">
       <p class="section-label">填寫出勤時間</p>
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-card-label">Time In</div>
-          <div class="info-card-value">上班時間</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">Time Out</div>
-          <div class="info-card-value">下班時間</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">Meal Break</div>
-          <div class="info-card-value">休息時間</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">Time Worked</div>
-          <div class="info-card-value">實際工時</div>
-          <div class="info-card-sub">ST/MO 第一列請勿填寫</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Time In / Time Out / Meal Break</h3>
+          <p>請依照實際上下班時間填寫，並記得填入午休時間。</p>
+          <div class="note"><strong>注意：</strong>ST/MO 欄位第一列請勿填寫，系統將自動計算。</div>
+          <img src="../images/timesheet-guide.jpg" alt="Timesheet 填寫範例" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(242,196,196,0.5)" />
         </div>
       </div>
-      <div class="note"><strong>注意：</strong>ST/MO 欄位第一列請勿填寫，系統將自動計算。</div>
-      <div class="img-placeholder">截圖 — 待上傳</div>
     </div>
 
-    <!-- 請假 -->
-    <div class="content-section">
-      <p class="section-label">請假填寫</p>
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-card-label">病假</div>
-          <div class="info-card-value">待填入</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">事假</div>
-          <div class="info-card-value">待填入</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">特休</div>
-          <div class="info-card-value">待填入</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">時數病假</div>
-          <div class="info-card-value">待填入</div>
-        </div>
-      </div>
-      <div class="img-placeholder">截圖 — 待上傳</div>
-    </div>
+    <!-- 各種狀況 -->
+    <div class="content-section" id="section-cases">
+      <p class="section-label">各種出勤狀況填寫</p>
 
-    <!-- 加班 -->
-    <div class="content-section">
-      <p class="section-label">加班填寫</p>
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-card-label">加班前</div>
-          <div class="info-card-value">取得主管同意</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-label">加班後</div>
-          <div class="info-card-value">依核准內容填寫</div>
+      <div class="step">
+        <div class="step-num">正</div>
+        <div class="step-body">
+          <h3>正常班</h3>
+          <p>確實填寫上下班時間，並於 Time Worked 填寫實際上班時數。</p>
         </div>
       </div>
-      <div class="img-placeholder">截圖 — 待上傳</div>
+
+      <div class="step">
+        <div class="step-num">假</div>
+        <div class="step-body">
+          <h3>事假／全天請假</h3>
+          <p>若為扣薪假別，上下班欄位留白，Time Worked 無需填寫。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">特</div>
+        <div class="step-body">
+          <h3>特休</h3>
+          <p>無需填寫上下班時間，但需於 Time Worked 填寫支薪的請假時數。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">半</div>
+        <div class="step-body">
+          <h3>半日特休</h3>
+          <p>於 Time Worked 填寫支薪的請假時數（例如半天 4 小時）。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">國</div>
+        <div class="step-body">
+          <h3>國定假日</h3>
+          <p>無需填寫上下班時間，但需於 Time Worked 填寫實際上班該拿到的時數。</p>
+          <div class="note"><strong>核心重點：</strong>Time Worked 填寫的是你正常上班應得的時數，而非加班時數。</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">加</div>
+        <div class="step-body">
+          <h3>加班</h3>
+          <p>加班前須取得主管事前核准，並提供核准紀錄給 HR。加班後依核准內容填寫。</p>
+          <div class="note"><strong>注意：</strong>未事先取得核准的加班，恕無法受理報加班費。</div>
+        </div>
+      </div>
     </div>
 
     <!-- 提交 -->
-    <div class="content-section">
+    <div class="content-section" id="section-submit">
       <p class="section-label">提交 Timesheet</p>
       <div class="step">
         <div class="step-num">→</div>
         <div class="step-body">
           <h3>Submit 送出表單</h3>
+          <p>確認所有出勤資料填寫正確後，按下 Submit 送出。</p>
           <div class="img-placeholder">截圖 — 待上傳</div>
         </div>
       </div>
     </div>
 
     <!-- 狀態 -->
-    <div class="content-section">
+    <div class="content-section" id="section-status">
       <p class="section-label">狀態說明</p>
       <div class="status-list">
         <div class="status-item">
@@ -156,18 +160,14 @@
           <span class="status-desc">主管尚未核准，請耐心等候或提醒主管。</span>
         </div>
         <div class="status-item">
-          <span class="status-tag approved">Approved</span>
+          <span class="status-tag approved">Invoice</span>
           <span class="status-desc">主管已核准，等待 Agency 確認。</span>
-        </div>
-        <div class="status-item">
-          <span class="status-tag paid">Paid</span>
-          <span class="status-desc">已完成所有流程，薪資將於預定日期入帳。</span>
         </div>
       </div>
     </div>
 
     <!-- 修改 -->
-    <div class="content-section">
+    <div class="content-section" id="section-edit">
       <p class="section-label">修改 Timesheet</p>
       <div class="info-grid">
         <div class="info-card">
@@ -184,7 +184,7 @@
     </div>
 
     <!-- 截止 -->
-    <div class="content-section">
+    <div class="content-section" id="section-deadline">
       <p class="section-label">提交期限</p>
       <div class="note">
         <strong>每月截止時間：</strong>每月最後一個上班日 23:59 前完成提交。逾期將影響當月薪資核算。
@@ -208,7 +208,6 @@
     <span class="footer-logo">Fieldglass Handbook</span>
     <span class="footer-copy">僅供內部使用</span>
   </footer>
-
   <script src="../js/accordion.js"></script>
 </body>
 </html>

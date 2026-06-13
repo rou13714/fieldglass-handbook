@@ -526,3 +526,53 @@
   .page-nav a { max-width: 100%; }
   .page-nav a.next { align-items: flex-start; margin-left: 0; }
 }
+
+/* ── HORIZONTAL FLOW ── */
+.flow-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+
+.flow-bubble-h {
+  background: var(--white);
+  border: 1px solid var(--pink-mid);
+  border-radius: 24px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--navy);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a.flow-bubble-h:hover {
+  background: var(--pink-pale);
+  border-color: var(--red-accent);
+  color: var(--red-accent);
+}
+
+.flow-bubble-h.active {
+  background: var(--pink-pale);
+  border-color: var(--red-accent);
+  color: var(--red-accent);
+}
+
+.flow-arrow-h {
+  font-size: 14px;
+  color: var(--pink-mid);
+}
+
+@media (max-width: 640px) {
+  .flow-h {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .flow-arrow-h {
+    transform: rotate(90deg);
+    padding-left: 18px;
+  }
+}
