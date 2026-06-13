@@ -201,37 +201,9 @@ nav a:hover {
   transform: translateX(-50%) translateY(0);
 }
 
-/* hotspot positions — percentages of image */
-/* Platform 1: First Login — top platform */
-#hs-login {
-  top: 2%;
-  left: 5%;
-  width: 72%;
-  height: 22%;
-}
-
-/* Platform 2: Timesheet — right middle */
-#hs-timesheet {
-  top: 24%;
-  left: 28%;
-  width: 68%;
-  height: 22%;
-}
-
-/* Platform 3: Expense Sheet — left middle-lower */
-#hs-expense {
-  top: 48%;
-  left: 4%;
-  width: 68%;
-  height: 22%;
-}
-
-/* Platform 4: FAQ — bottom platform */
-#hs-faq {
-  top: 70%;
-  left: 16%;
-  width: 76%;
-  height: 26%;
+/* hotspot positions — set by JS, just base styles here */
+.hotspot {
+  position: absolute;
 }
 
 /* ── SECTION CARDS (below hero) ── */

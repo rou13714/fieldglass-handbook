@@ -96,5 +96,45 @@
     <span class="footer-copy">僅供內部使用</span>
   </footer>
 
+<script>
+  // Hotspot zones defined as % of image natural size (1024 x 1536)
+  // [top%, left%, width%, height%]
+  const zones = {
+    'hs-login':     [2,   5,  72, 22],
+    'hs-timesheet': [24, 28,  68, 22],
+    'hs-expense':   [48,  4,  68, 22],
+    'hs-faq':       [70, 16,  76, 26],
+  };
+
+  function positionHotspots() {
+    const img = document.querySelector('.map-container img');
+    const container = document.querySelector('.map-container');
+    if (!img) return;
+
+    const rect = img.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const imgTop = rect.top - containerRect.top;
+    const imgLeft = rect.left - containerRect.left;
+    const imgW = rect.width;
+    const imgH = rect.height;
+
+    Object.entries(zones).forEach(([id, [t, l, w, h]]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.top    = (imgTop  + imgH * t / 100) + 'px';
+      el.style.left   = (imgLeft + imgW * l / 100) + 'px';
+      el.style.width  = (imgW * w / 100) + 'px';
+      el.style.height = (imgH * h / 100) + 'px';
+    });
+  }
+
+  const img = document.querySelector('.map-container img');
+  if (img.complete) {
+    positionHotspots();
+  } else {
+    img.addEventListener('load', positionHotspots);
+  }
+  window.addEventListener('resize', positionHotspots);
+</script>
 </body>
 </html>
