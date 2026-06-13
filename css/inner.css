@@ -1,0 +1,218 @@
+/* ── INNER PAGE ── */
+.page-hero {
+  padding-top: 64px;
+  background: var(--white);
+  border-bottom: 1px solid rgba(242,196,196,0.4);
+}
+
+.page-hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px 48px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 32px;
+  letter-spacing: 0.04em;
+}
+
+.breadcrumb a {
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+  color: var(--red-accent);
+}
+
+.breadcrumb-sep {
+  color: var(--pink-mid);
+}
+
+.page-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red-accent);
+  margin-bottom: 14px;
+}
+
+.page-title {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 300;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.page-title strong {
+  font-weight: 500;
+}
+
+.page-desc {
+  font-size: 15px;
+  color: var(--text-sub);
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+/* ── CONTENT ── */
+.page-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+/* Step block */
+.step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0 24px;
+  margin-bottom: 64px;
+  align-items: start;
+}
+
+.step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--pink-pale);
+  border: 1px solid var(--pink-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--red-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-body h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.step-body p {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.step-img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(242,196,196,0.5);
+  margin-top: 16px;
+  background: var(--pink-pale);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pink-mid);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+/* Note / tip box */
+.note {
+  background: var(--pink-pale);
+  border-left: 3px solid var(--red-accent);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 13px;
+  color: var(--navy);
+  line-height: 1.65;
+}
+
+.note strong {
+  color: var(--red-accent);
+}
+
+/* ── PAGINATION ── */
+.page-nav {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid rgba(242,196,196,0.4);
+  padding-top: 40px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  padding: 20px 24px;
+  border: 1px solid rgba(242,196,196,0.6);
+  border-radius: 12px;
+  flex: 1;
+  transition: all 0.25s ease;
+  max-width: 240px;
+}
+
+.page-nav a:hover {
+  border-color: var(--pink-mid);
+  background: var(--pink-pale);
+}
+
+.page-nav a.prev {
+  align-items: flex-start;
+}
+
+.page-nav a.next {
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.nav-direction {
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--navy);
+}
+
+@media (max-width: 640px) {
+  .step {
+    grid-template-columns: 1fr;
+  }
+
+  .step-num {
+    margin-bottom: 12px;
+  }
+
+  .page-nav {
+    flex-direction: column;
+  }
+
+  .page-nav a {
+    max-width: 100%;
+  }
+
+  .page-nav a.next {
+    align-items: flex-start;
+    margin-left: 0;
+  }
+}
