@@ -13,8 +13,7 @@
     <nav>
       <a href="login.html">First Login</a>
       <a href="timesheet.html">Timesheet</a>
-      <a href="simulator.html">模擬器</a>
-      <a href="expense.html">Expense Sheet</a>
+      <a href="expense.html">Expense</a>
       <a href="faq.html">FAQ</a>
     </nav>
   </header>

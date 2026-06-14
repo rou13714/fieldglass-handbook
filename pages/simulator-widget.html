@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Timesheet 填寫模擬器</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --pink: #FDE8E8; --pink-mid: #F2C4C4; --navy: #3D4F6B;
+    --red: #E05252; --green: #5BAD72; --gold: #D4A84B;
+    --gray: #F7F7F7; --text: #2C3A50; --sub: #7A8899; --white: #fff;
+  }
+  body { font-family: 'Inter','Noto Sans TC',sans-serif; background: var(--white); color: var(--text); min-height: 100vh; padding: 32px 16px 64px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .sim-header { text-align: center; margin-bottom: 40px; }
+  .sim-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+  .sim-title { font-size: 26px; font-weight: 300; color: var(--navy); letter-spacing: -0.02em; margin-bottom: 8px; }
+  .sim-title strong { font-weight: 600; }
+  .sim-desc { font-size: 13px; color: var(--sub); line-height: 1.6; }
+  .scenario-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 14px; }
+  .scenario-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 28px; }
+  .scenario-btn { border: 1px solid var(--pink-mid); background: var(--white); border-radius: 12px; padding: 14px 16px; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; }
+  .scenario-btn:hover, .scenario-btn.active { border-color: var(--red); background: var(--pink); }
+  .scenario-btn .s-icon { font-size: 18px; margin-bottom: 2px; }
+  .scenario-btn .s-name { font-size: 13px; font-weight: 600; color: var(--navy); line-height: 1.4; }
+  .scenario-btn .s-desc { font-size: 11px; color: var(--sub); line-height: 1.4; }
+  .sub-section { background: var(--gray); border-radius: 14px; padding: 20px; margin-bottom: 24px; display: none; }
+  .sub-section.visible { display: block; }
+  .sub-label { font-size: 12px; font-weight: 600; color: var(--sub); margin-bottom: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .sub-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sub-btn { border: 1px solid var(--pink-mid); background: var(--white); border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: 500; color: var(--navy); cursor: pointer; transition: all 0.2s; }
+  .sub-btn:hover, .sub-btn.active { border-color: var(--red); background: var(--pink); color: var(--red); }
+  .time-inputs { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+  .time-group { display: flex; flex-direction: column; gap: 6px; }
+  .time-group label { font-size: 11px; color: var(--sub); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .time-group input[type=time] { border: 1px solid var(--pink-mid); border-radius: 8px; padding: 8px 12px; font-size: 14px; color: var(--navy); width: 120px; background: var(--white); outline: none; transition: border-color 0.2s; }
+  .time-group input[type=time]:focus { border-color: var(--red); }
+  .hour-input { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .hour-input input[type=range] { flex: 1; accent-color: var(--red); }
+  .hour-val { font-size: 16px; font-weight: 600; color: var(--red); min-width: 40px; }
+  .result-section { margin-top: 8px; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .result-title { font-size: 13px; font-weight: 600; color: var(--navy); letter-spacing: 0.06em; text-transform: uppercase; }
+  .result-badge { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: var(--pink); color: var(--red); }
+  .fg-table { border: 1px solid var(--pink-mid); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+  .fg-row { display: grid; grid-template-columns: 1fr 110px; border-bottom: 1px solid rgba(242,196,196,0.4); }
+  .fg-row:last-child { border-bottom: none; }
+  .fg-row.highlight { background: #fffbf0; }
+  .fg-row.dimmed { opacity: 0.28; }
+  .fg-cell { padding: 11px 16px; font-size: 13px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .fg-cell:last-child { border-left: 1px solid rgba(242,196,196,0.4); align-items: flex-end; }
+  .fg-field-name { font-weight: 500; color: var(--navy); font-size: 12px; }
+  .fg-field-sub { font-size: 11px; color: var(--sub); }
+  .fg-value { font-size: 15px; font-weight: 600; color: var(--navy); }
+  .fg-value.empty { color: var(--pink-mid); font-size: 12px; font-weight: 400; }
+  .fg-value.green { color: var(--green); }
+  .fg-value.red { color: var(--red); }
+  .fg-value.gold { color: var(--gold); }
+  .fg-section-header { background: var(--navy); color: var(--white); padding: 8px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+  .explain-box { background: var(--pink); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+  .explain-title { font-size: 11px; font-weight: 600; color: var(--red); margin-bottom: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .explain-list { list-style: none; padding: 0; }
+  .explain-list li { font-size: 13px; color: var(--navy); padding: 4px 0 4px 16px; position: relative; line-height: 1.55; }
+  .explain-list li::before { content: '·'; position: absolute; left: 0; color: var(--red); font-size: 18px; line-height: 1.2; }
+  .warn-box { background: #fff0f0; border-left: 3px solid var(--red); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 13px; color: var(--navy); line-height: 1.6; margin-top: 12px; }
+  .warn-box strong { color: var(--red); }
+  .placeholder-msg { text-align: center; padding: 48px 24px; color: var(--sub); font-size: 14px; background: var(--gray); border-radius: 14px; line-height: 1.6; }
+  .placeholder-msg .p-icon { font-size: 32px; margin-bottom: 12px; }
+  @media (max-width: 480px) {
+    .scenario-grid { grid-template-columns: 1fr; }
+    .fg-row { grid-template-columns: 1fr 90px; }
+    .time-inputs { gap: 8px; }
+    .time-group input[type=time] { width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sim-header">
+    <p class="sim-eyebrow">Timesheet 填寫模擬器</p>
+    <h1 class="sim-title">今天該怎麼<strong>填？</strong></h1>
+    <p class="sim-desc">選擇你今天的出勤狀況，模擬器會即時告訴你每個欄位該填什麼。</p>
+  </div>
+
+  <p class="scenario-label">今天的狀況是？</p>
+  <div class="scenario-grid">
+    <button class="scenario-btn" onclick="selectScenario('normal',this)">
+      <span class="s-icon">💼</span>
+      <span class="s-name">正常上班</span>
+      <span class="s-desc">全天正常出勤，無請假</span>
+    </button>
+    <button class="scenario-btn" onclick="selectScenario('paid_leave',this)">
+      <span class="s-icon">🌿</span>
+      <span class="s-name">支薪假</span>
+      <span class="s-desc">特休／優假／支薪病假／支薪事假</span>
+    </button>
+    <button class="scenario-btn" onclick="selectScenario('holiday',this)">
+      <span class="s-icon">🎌</span>
+      <span class="s-name">國定假日</span>
+      <span class="s-desc">有上班或無上班，填法不同</span>
+    </button>
+    <button class="scenario-btn" onclick="selectScenario('unpaid_leave',this)">
+      <span class="s-icon">📋</span>
+      <span class="s-name">不支薪假</span>
+      <span class="s-desc">事假／病假／家庭照顧假</span>
+    </button>
+  </div>
+
+  <!-- 正常上班 -->
+  <div class="sub-section" id="sub-normal">
+    <p class="sub-label">實際上下班時間</p>
+    <div class="time-inputs">
+      <div class="time-group"><label>Time In</label><input type="time" id="n-in" value="09:00" oninput="render()" /></div>
+      <div class="time-group"><label>午休開始</label><input type="time" id="n-bo" value="12:00" oninput="render()" /></div>
+      <div class="time-group"><label>午休結束</label><input type="time" id="n-bi" value="13:00" oninput="render()" /></div>
+      <div class="time-group"><label>Time Out</label><input type="time" id="n-out" value="18:00" oninput="render()" /></div>
+    </div>
+  </div>
+
+  <!-- 支薪假 -->
+  <div class="sub-section" id="sub-paid_leave">
+    <p class="sub-label">請幾天？</p>
+    <div class="sub-options">
+      <button class="sub-btn" onclick="setSub('pl-days','全天')" id="pl-days-全天">全天</button>
+      <button class="sub-btn" onclick="setSub('pl-days','半天')" id="pl-days-半天">半天</button>
+    </div>
+    <div id="pl-half-opts" style="display:none;margin-top:16px">
+      <p class="sub-label">實際上下班時間（半天有上班要填）</p>
+      <div class="time-inputs">
+        <div class="time-group"><label>Time In</label><input type="time" id="pl-in" value="09:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休開始</label><input type="time" id="pl-bo" value="12:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休結束</label><input type="time" id="pl-bi" value="13:00" oninput="render()" /></div>
+        <div class="time-group"><label>Time Out</label><input type="time" id="pl-out" value="16:00" oninput="render()" /></div>
+      </div>
+      <p style="font-size:11px;color:var(--sub);margin-top:8px">有上班就照實際打卡時間填，系統會自動計算工時。</p>
+    </div>
+  </div>
+
+  <!-- 國定假日 -->
+  <div class="sub-section" id="sub-holiday">
+    <p class="sub-label">今天有去上班嗎？</p>
+    <div class="sub-options">
+      <button class="sub-btn" onclick="setSub('hol-work','有上班')" id="hol-work-有上班">有上班</button>
+      <button class="sub-btn" onclick="setSub('hol-work','無上班')" id="hol-work-無上班">無上班（放假）</button>
+    </div>
+    <div id="hol-work-opts" style="display:none;margin-top:16px">
+      <p class="sub-label">實際上下班時間</p>
+      <div class="time-inputs">
+        <div class="time-group"><label>Time In</label><input type="time" id="hol-in" value="09:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休開始</label><input type="time" id="hol-bo" value="12:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休結束</label><input type="time" id="hol-bi" value="13:00" oninput="render()" /></div>
+        <div class="time-group"><label>Time Out</label><input type="time" id="hol-out" value="18:00" oninput="render()" /></div>
+      </div>
+      <div style="margin-top:16px">
+        <p class="sub-label">8H 後還有加班嗎？額外加幾小時？</p>
+        <div class="hour-input">
+          <input type="range" min="0" max="4" value="0" id="hol-ot-hours" oninput="document.getElementById('hol-ot-val').textContent=this.value==='0'?'無加班':this.value+'H';render()" />
+          <span class="hour-val" id="hol-ot-val">無加班</span>
+        </div>
+        <p style="font-size:11px;color:var(--sub);margin-top:6px">1–8H 一律給 8H 假日加班費；超過 8H 的部分以一般加班費率計算。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 不支薪假 -->
+  <div class="sub-section" id="sub-unpaid_leave">
+    <p class="sub-label">請幾天？</p>
+    <div class="sub-options">
+      <button class="sub-btn" onclick="setSub('ul-days','全天')" id="ul-days-全天">全天</button>
+      <button class="sub-btn" onclick="setSub('ul-days','半天')" id="ul-days-半天">半天</button>
+    </div>
+    <div id="ul-half-opts" style="display:none;margin-top:16px">
+      <p class="sub-label">實際上下班時間（有上班那半天要填）</p>
+      <div class="time-inputs">
+        <div class="time-group"><label>Time In</label><input type="time" id="ul-in" value="09:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休開始</label><input type="time" id="ul-bo" value="12:00" oninput="render()" /></div>
+        <div class="time-group"><label>午休結束</label><input type="time" id="ul-bi" value="13:00" oninput="render()" /></div>
+        <div class="time-group"><label>Time Out</label><input type="time" id="ul-out" value="13:00" oninput="render()" /></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-section" id="result">
+    <div class="placeholder-msg">
+      <div class="p-icon">👆</div>
+      選擇上方的出勤狀況<br>模擬器會告訴你怎麼填
+    </div>
+  </div>
+
+</div>
+<script>
+let scenario = null;
+const subState = {};
+
+function selectScenario(s, btn) {
+  scenario = s;
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.sub-section').forEach(el => el.classList.remove('visible'));
+  var sub = document.getElementById('sub-' + s);
+  if (sub) sub.classList.add('visible');
+  render();
+}
+
+function setSub(key, val) {
+  subState[key] = val;
+  document.querySelectorAll('[id^="' + key + '-"]').forEach(b => b.classList.remove('active'));
+  var el = document.getElementById(key + '-' + val);
+  if (el) el.classList.add('active');
+  // show/hide dependent options
+  if (key === 'pl-days') {
+    document.getElementById('pl-half-opts').style.display = val === '半天' ? 'block' : 'none';
+  }
+  if (key === 'hol-work') {
+    document.getElementById('hol-work-opts').style.display = val === '有上班' ? 'block' : 'none';
+  }
+  if (key === 'ul-days') {
+    document.getElementById('ul-half-opts').style.display = val === '半天' ? 'block' : 'none';
+  }
+  render();
+}
+
+function timeToMins(t) {
+  if (!t) return 0;
+  var parts = t.split(':');
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+function minsToTime(m) {
+  var h = Math.floor(m / 60).toString().padStart(2, '0');
+  var mm = (m % 60).toString().padStart(2, '0');
+  return h + ':' + mm;
+}
+function calcWorked(tin, bo, bi, tout) {
+  var brk = timeToMins(bi) - timeToMins(bo);
+  var total = timeToMins(tout) - timeToMins(tin) - brk;
+  return Math.max(0, total / 60);
+}
+
+function row(label, sub, value, style, highlight, dim) {
+  return { label: label, sub: sub, value: value, style: style || '', highlight: !!highlight, dim: !!dim };
+}
+function sec(name) { return { section: name }; }
+
+function buildTable(rows, explains, warn) {
+  var html = '<div class="result-header"><span class="result-title">填寫結果</span><span class="result-badge">Fieldglass 模擬</span></div>';
+  html += '<div class="fg-table">';
+  rows.forEach(function(r) {
+    if (r.section) { html += '<div class="fg-section-header">' + r.section + '</div>'; return; }
+    var rowCls = 'fg-row' + (r.dim ? ' dimmed' : '') + (r.highlight ? ' highlight' : '');
+    var valCls = 'fg-value' + (r.style ? ' ' + r.style : '') + (r.value === null ? ' empty' : '');
+    var valTxt = r.value === null ? '（留空）' : r.value;
+    html += '<div class="' + rowCls + '"><div class="fg-cell"><span class="fg-field-name">' + r.label + '</span>' + (r.sub ? '<span class="fg-field-sub">' + r.sub + '</span>' : '') + '</div><div class="fg-cell"><span class="' + valCls + '">' + valTxt + '</span></div></div>';
+  });
+  html += '</div>';
+  if (explains && explains.length) {
+    html += '<div class="explain-box"><div class="explain-title">為什麼這樣填？</div><ul class="explain-list">';
+    explains.forEach(function(e) { html += '<li>' + e + '</li>'; });
+    html += '</ul></div>';
+  }
+  if (warn) html += '<div class="warn-box">' + warn + '</div>';
+  return html;
+}
+
+function render() {
+  var el = document.getElementById('result');
+  if (!scenario) return;
+  var rows = [], explains = [], warn = null;
+
+  // ── 正常上班 ──
+  if (scenario === 'normal') {
+    var tin = document.getElementById('n-in').value || '09:00';
+    var bo  = document.getElementById('n-bo').value  || '12:00';
+    var bi  = document.getElementById('n-bi').value  || '13:00';
+    var tout= document.getElementById('n-out').value || '18:00';
+    var totalWorked = calcWorked(tin, bo, bi, tout);
+    var standard = Math.min(totalWorked, 8);
+    var otTotal  = Math.max(0, totalWorked - 8);
+    var ot1 = Math.min(otTotal, 2);
+    var ot2 = Math.max(0, otTotal - 2);
+    function fmtH(v) { return v % 1 === 0 ? v + 'H' : v.toFixed(2) + 'H'; }
+    rows = [
+      sec('Time In / Out'),
+      row('Time In', '', tin, 'green', false, false),
+      row('Meal Break 1 Out', '午休開始', bo, '', false, false),
+      row('Meal Break 1 In',  '午休結束', bi, '', false, false),
+      row('Time Out', '', tout, 'green', false, false),
+      sec('Time Worked'),
+      row('Taiwan Standard Calculated Hourly', '正常時數', fmtH(standard), 'green', true, false),
+      row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', ot1 > 0 ? fmtH(ot1) : null, ot1 > 0 ? 'gold' : '', ot1 > 0, ot1 === 0),
+      row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', ot2 > 0 ? fmtH(ot2) : null, ot2 > 0 ? 'red'  : '', ot2 > 0, ot2 === 0),
+      row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+      row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', null, '', false, true),
+    ];
+    explains = [
+      '總工時 = 下班時間 - 上班時間 - 午休時間 = ' + fmtH(totalWorked),
+      'Standard 最多 8H，超過的部分自動進入加班欄位。',
+      otTotal > 0 ? '今天超時 ' + fmtH(otTotal) + '：前 2H 費率較低（≤2H），超過 2H 費率更高（>2H）。' : '今天未超過 8H，無加班。',
+      '⚠️ 連續工作 4 小時，須安排至少 30 分鐘休息（Meal Break）。',
+    ];
+
+  // ── 支薪假 ──
+  } else if (scenario === 'paid_leave') {
+    var days = subState['pl-days'] || null;
+    if (!days) { el.innerHTML = '<div class="placeholder-msg"><div class="p-icon">👇</div>請選擇全天或半天</div>'; return; }
+
+    if (days === '全天') {
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', null, '', false, true),
+        row('Meal Break 1 Out', '午休開始', null, '', false, true),
+        row('Meal Break 1 In',  '午休結束', null, '', false, true),
+        row('Time Out', '', null, '', false, true),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', null, '', false, true),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', null, '', false, true),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', null, '', false, true),
+        row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', '8H', 'gold', true, false),
+      ];
+      explains = [
+        '全天支薪假：Time In / Out 不填，所有 Time Worked 欄位留空。',
+        'Annual Leave / Sick Leave 固定填 8H，代表這天由假別支薪。',
+      ];
+
+    } else {
+      var tin  = document.getElementById('pl-in').value  || '09:00';
+      var bo   = document.getElementById('pl-bo').value  || '12:00';
+      var bi   = document.getElementById('pl-bi').value  || '13:00';
+      var tout = document.getElementById('pl-out').value || '13:00';
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', tin, 'green', false, false),
+        row('Meal Break 1 Out', '午休開始', bo, '', false, false),
+        row('Meal Break 1 In',  '午休結束', bi, '', false, false),
+        row('Time Out', '', tout, 'green', false, false),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', '4H', 'green', true, false),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', null, '', false, true),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', null, '', false, true),
+        row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', '4H', 'gold', true, false),
+      ];
+      explains = [
+        '有上班就照實際打卡時間填 Time In / Out。',
+        '支薪假以 0.5 日（4H）為單位，不管實際上班幾小時。',
+        'Standard 固定填 4H，Annual Leave / Sick Leave 固定填 4H。',
+        '午休時段有跨到就填，沒跨到就留空。',
+      ];
+    }
+
+  // ── 國定假日 ──
+  } else if (scenario === 'holiday') {
+    var work = subState['hol-work'] || null;
+    if (!work) { el.innerHTML = '<div class="placeholder-msg"><div class="p-icon">👇</div>請選擇今天有無上班</div>'; return; }
+
+    if (work === '無上班') {
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', null, '', false, true),
+        row('Meal Break 1 Out', '午休開始', null, '', false, true),
+        row('Meal Break 1 In',  '午休結束', null, '', false, true),
+        row('Time Out', '', null, '', false, true),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', '8H', 'green', true, false),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', null, '', false, true),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', null, '', false, true),
+        row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', null, '', false, true),
+      ];
+      explains = [
+        '國定假日無上班：Time In / Out 不填。',
+        'Standard 填 8H，代表這天應得的基本工資。',
+        'Holiday OT 不填，因為沒有實際出勤。',
+      ];
+
+    } else {
+      var tin  = document.getElementById('hol-in').value  || '09:00';
+      var bo   = document.getElementById('hol-bo').value  || '12:00';
+      var bi   = document.getElementById('hol-bi').value  || '13:00';
+      var tout = document.getElementById('hol-out').value || '18:00';
+      var holOtHrs = parseInt(document.getElementById('hol-ot-hours').value) || 0;
+      var ot1 = Math.min(holOtHrs, 2);
+      var ot2 = Math.max(0, holOtHrs - 2);
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', tin, 'green', false, false),
+        row('Meal Break 1 Out', '午休開始', bo, '', false, false),
+        row('Meal Break 1 In',  '午休結束', bi, '', false, false),
+        row('Time Out', '', tout, 'green', false, false),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', '8H', 'green', true, false),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', ot1 > 0 ? ot1 + 'H' : null, ot1 > 0 ? 'gold' : '', ot1 > 0, ot1 === 0),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', ot2 > 0 ? ot2 + 'H' : null, ot2 > 0 ? 'red'  : '', ot2 > 0, ot2 === 0),
+        row('Taiwan Overtime Holiday',            '國定假日加班', '8H', 'gold', true, false),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', null, '', false, true),
+      ];
+      explains = [
+        '有上班就照實際打卡時間填 Time In / Out。',
+        '不管實際上班幾小時（1–8H），Standard 和 Holiday OT 都固定填 8H。',
+      ].concat(holOtHrs > 0 ? ['今天在 8H 後又加班 ' + holOtHrs + 'H，以一般加班費率計算（≤2H 和 >2H 分別填入）。'] : []);
+    }
+
+  // ── 不支薪假 ──
+  } else if (scenario === 'unpaid_leave') {
+    var days = subState['ul-days'] || null;
+    if (!days) { el.innerHTML = '<div class="placeholder-msg"><div class="p-icon">👇</div>請選擇全天或半天</div>'; return; }
+
+    if (days === '全天') {
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', null, '', false, true),
+        row('Meal Break 1 Out', '午休開始', null, '', false, true),
+        row('Meal Break 1 In',  '午休結束', null, '', false, true),
+        row('Time Out', '', null, '', false, true),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', null, '', false, true),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', null, '', false, true),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', null, '', false, true),
+        row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', null, '', false, true),
+      ];
+      explains = [
+        '全天不支薪假：所有欄位留空。',
+        'HR 會依排班記錄處理，不需填入任何時數。',
+      ];
+      warn = '<strong>注意：</strong>不支薪假將從薪資中扣除，請確認假別與時數正確。';
+
+    } else {
+      var tin  = document.getElementById('ul-in').value  || '09:00';
+      var bo   = document.getElementById('ul-bo').value  || '12:00';
+      var bi   = document.getElementById('ul-bi').value  || '13:00';
+      var tout = document.getElementById('ul-out').value || '13:00';
+      var worked = calcWorked(tin, bo, bi, tout);
+      var workedStr = worked % 1 === 0 ? worked + 'H' : worked.toFixed(2) + 'H';
+      var hasBrk = worked > 3;
+      rows = [
+        sec('Time In / Out'),
+        row('Time In', '', tin, 'green', false, false),
+        row('Meal Break 1 Out', '午休開始', hasBrk ? bo : null, '', false, !hasBrk),
+        row('Meal Break 1 In',  '午休結束', hasBrk ? bi : null, '', false, !hasBrk),
+        row('Time Out', '', tout, 'green', false, false),
+        sec('Time Worked'),
+        row('Taiwan Standard Calculated Hourly', '正常時數', workedStr, 'green', true, false),
+        row('Taiwan Overtime (Less or = 2 Hrs)', '平日加班 ≤2H', null, '', false, true),
+        row('Taiwan Overtime (Over 2 Hrs)',       '平日加班 >2H', null, '', false, true),
+        row('Taiwan Overtime Holiday',            '國定假日加班', null, '', false, true),
+        row('Taiwan Annual Leave / Sick Leave',   '有支薪請假時數', null, '', false, true),
+      ];
+      explains = [
+        '半天不支薪假：有上班那半天照實際打卡時間填 Time In / Out。',
+        '實際上班 ' + workedStr + '，Standard 只填這個時數。',
+        '請假那半天不需填入任何欄位，HR 依紀錄扣薪。',
+      ];
+      warn = '<strong>注意：</strong>請假的 ' + (8 - worked) + 'H 將從薪資中扣除。';
+    }
+  }
+
+  el.innerHTML = buildTable(rows, explains, warn);
+}
+
+  // Tell parent iframe our height
+  function sendHeight() {
+    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  const obs = new MutationObserver(sendHeight);
+  obs.observe(document.body, { childList: true, subtree: true });
+</script>
+</body>
+</html>

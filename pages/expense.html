@@ -149,35 +149,77 @@
     <div class="content-section" id="section-mail">
       <p class="section-label">紙本寄送</p>
 
-      <div class="note" style="border-color:#E05252;background:#fff0f0">
+      <div class="note" style="border-color:var(--red-accent);background:#fff0f0">
         <strong>⚠️ 重要：</strong>單據請務必印出並好好黏貼，Expense Sheet 與紙本憑證需同時寄出，缺一不受理。
       </div>
 
-      <div style="margin-top:24px">
-        <p style="font-size:13px;font-weight:500;color:var(--red-accent);margin-bottom:16px">✕ 錯誤示範（請勿這樣做）</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px">
-          <div class="receipt-hover-group">
-            <div class="img-placeholder" style="min-height:100px;cursor:pointer;font-size:11px">用紙膠帶黏貼<br>且遮住資訊</div>
-            <img class="preview" src="../images/receipts/error1.jpg" alt="錯誤範例1" />
-          </div>
-          <div class="receipt-hover-group">
-            <div class="img-placeholder" style="min-height:100px;cursor:pointer;font-size:11px">單據全部<br>重疊亂黏</div>
-            <img class="preview" src="../images/receipts/error2.jpg" alt="錯誤範例2" />
-          </div>
-          <div class="receipt-hover-group">
-            <div class="img-placeholder" style="min-height:100px;cursor:pointer;font-size:11px">單據重疊<br>資訊不清</div>
-            <img class="preview" src="../images/receipts/error3.jpg" alt="錯誤範例3" />
-          </div>
-          <div class="receipt-hover-group">
-            <div class="img-placeholder" style="min-height:100px;cursor:pointer;font-size:11px">收據散落<br>未整理</div>
-            <img class="preview" src="../images/receipts/error4.jpg" alt="錯誤範例4" />
-          </div>
-          <div class="receipt-hover-group">
-            <div class="img-placeholder" style="min-height:100px;cursor:pointer;font-size:11px">單據混亂<br>無法辨識</div>
-            <img class="preview" src="../images/receipts/error5.jpg" alt="錯誤範例5" />
+      <div style="margin-top:28px">
+        <p style="font-size:13px;font-weight:500;color:var(--red-accent);margin-bottom:16px">✕ 常見錯誤示範（點擊展開查看）</p>
+
+        <div class="accordion">
+          <button class="accordion-header">
+            <span class="accordion-question">用紙膠帶黏貼，且遮住重要資訊</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              紙膠帶會遮蓋金額、日期或統編，導致無法辨識，影響報帳審核與入帳。請改用雙面膠或膠水平貼。
+              <img src="../images/receipts/error1.jpg" alt="錯誤範例：紙膠帶遮住資訊" />
+            </div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--text-sub);margin-top:8px">將游標移至卡片上方可預覽錯誤範例</p>
+
+        <div class="accordion">
+          <button class="accordion-header">
+            <span class="accordion-question">單據全部重疊亂黏</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              單據重疊後容易遺失，HR 需進行人工拆開處理，大幅延誤入帳時程。請將每張單據平鋪黏貼，互不遮擋。
+              <img src="../images/receipts/error2.jpg" alt="錯誤範例：單據重疊" />
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <button class="accordion-header">
+            <span class="accordion-question">單據資訊被遮蓋，無法辨識金額</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              金額、日期、統編是審核必要資訊，一旦被遮蓋即無法受理，整份報帳將被退回。
+              <img src="../images/receipts/error3.jpg" alt="錯誤範例：資訊被遮蓋" />
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <button class="accordion-header">
+            <span class="accordion-question">收據散落，未整理黏貼</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              散落的單據在郵寄過程中容易遺失，且無法對應 Expense Sheet 上的項目，導致退件或延誤。
+              <img src="../images/receipts/error4.jpg" alt="錯誤範例：收據散落" />
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <button class="accordion-header">
+            <span class="accordion-question">多張單據混亂堆疊，無法逐一核對</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              每筆費用應對應一張清楚的憑證，堆疊後 HR 無法逐一核對金額，會要求重新整理後補件，延誤入帳。
+              <img src="../images/receipts/error5.jpg" alt="錯誤範例：單據混亂堆疊" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div style="margin-top:28px">
