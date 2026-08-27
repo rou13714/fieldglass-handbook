@@ -7,241 +7,82 @@
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/inner.css" />
   <style>
-    /* ── LAYOUT WITH STICKY LEFT NAV ── */
-    .ts-layout {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 0;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-      align-items: start;
+    /* Zoom overlay */
+    .zoom-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:9999; align-items:center; justify-content:center; cursor:zoom-out; }
+    .zoom-overlay.active { display:flex; }
+    .zoom-overlay img { max-width:92vw; max-height:92vh; border-radius:10px; box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+
+    /* Zoomable */
+    .zoomable { cursor:zoom-in; transition:transform 0.2s; border-radius:12px; display:block; border:1px solid rgba(232,170,170,0.4); }
+    .zoomable:hover { transform:scale(1.02); box-shadow:0 8px 32px rgba(44,61,90,0.15); }
+
+    /* Layout */
+    .ts-layout { display:grid; grid-template-columns:200px 1fr; gap:0; max-width:960px; margin:0 auto; padding:56px 24px 80px; align-items:start; }
+    .ts-flow-nav { position:sticky; top:88px; padding-right:24px; }
+    .ts-flow-label { font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--red-accent); margin-bottom:16px; }
+    .ts-flow-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:4px; position:relative; }
+    .ts-flow-item::before { content:''; position:absolute; left:9px; top:28px; width:2px; height:calc(100% - 4px); background:rgba(242,196,196,0.5); }
+    .ts-flow-item:last-child::before { display:none; }
+    .ts-flow-dot { width:20px; height:20px; border-radius:50%; border:2px solid var(--pink-mid); background:var(--white); flex-shrink:0; margin-top:2px; transition:all 0.2s; }
+    .ts-flow-item.active .ts-flow-dot { background:var(--red-accent); border-color:var(--red-accent); }
+    .ts-flow-link { font-size:12px; color:var(--text-sub); text-decoration:none; line-height:1.5; padding:2px 0 16px; transition:color 0.2s; display:block; }
+    .ts-flow-link:hover, .ts-flow-item.active .ts-flow-link { color:var(--red-accent); font-weight:500; }
+    .ts-content { min-width:0; }
+
+    @media (max-width:768px) {
+      .ts-layout { grid-template-columns:1fr; padding:32px 20px 60px; }
+      .ts-flow-nav { display:none; }
     }
 
-    /* Left sticky flow nav */
-    .ts-flow-nav {
-      position: sticky;
-      top: 80px;
-      padding-right: 32px;
-    }
+    /* Tab */
+    .tab-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+    .tab-btn { border:1px solid var(--pink-mid); background:var(--white); border-radius:20px; padding:7px 16px; font-size:13px; font-weight:500; color:var(--text-sub); cursor:pointer; transition:all 0.2s; font-family:'Inter','Noto Sans TC',sans-serif; }
+    .tab-btn:hover { border-color:var(--red-accent); color:var(--red-accent); }
+    .tab-btn.active { background:var(--red-accent); border-color:var(--red-accent); color:white; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
 
-    .ts-flow-nav-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--red-accent);
-      margin-bottom: 20px;
-    }
+    /* Side-by-side layout for screenshots + explanation */
+    .side-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; margin-top:16px; }
+    .side-layout.wide-img { grid-template-columns:3fr 2fr; }
+    @media (max-width:640px) { .side-layout, .side-layout.wide-img { grid-template-columns:1fr; } }
 
-    .ts-flow-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 4px;
-      text-decoration: none;
-      padding: 8px 0;
-      position: relative;
-    }
+    /* Field explanation list */
+    .field-explain { list-style:none; padding:0; margin:0; }
+    .field-explain li { padding:10px 0; border-bottom:1px solid rgba(242,196,196,0.4); font-size:13px; line-height:1.6; }
+    .field-explain li:last-child { border-bottom:none; }
+    .field-tag { display:inline-block; font-size:11px; font-weight:600; font-family:'Inter',monospace; background:var(--pink-pale); color:var(--red-accent); border-radius:6px; padding:2px 8px; margin-bottom:4px; }
+    .field-warn { background:#fff0f0; border-left:3px solid var(--red-accent); border-radius:0 8px 8px 0; padding:10px 14px; margin-top:8px; font-size:13px; color:var(--navy); }
 
-    .ts-flow-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--pink-mid);
-      flex-shrink: 0;
-      margin-top: 4px;
-      transition: background 0.25s;
-    }
+    /* Overview diagram */
+    .ts-overview-wrap { position:relative; margin-bottom:32px; }
+    .ts-overview-wrap img { width:100%; border-radius:12px; border:1px solid rgba(232,170,170,0.4); cursor:zoom-in; }
+    .ts-overview-hint { font-size:12px; color:var(--text-sub); margin-top:6px; }
 
-    .ts-flow-item.active .ts-flow-dot,
-    .ts-flow-item:hover .ts-flow-dot {
-      background: var(--red-accent);
-    }
+    /* Scenario card */
+    .scenario-card { background:var(--white); border:1px solid rgba(232,170,170,0.5); border-radius:14px; padding:20px 24px; }
+    .scenario-row { display:grid; grid-template-columns:160px 1fr; gap:6px 14px; margin-bottom:8px; font-size:13px; align-items:start; }
+    .scenario-field { color:var(--text-sub); font-family:'Inter',monospace; font-size:11px; padding-top:2px; }
+    .scenario-value { color:var(--navy); font-weight:500; }
+    .scenario-value.empty { color:var(--pink-mid); font-style:italic; font-weight:400; }
+    .scenario-value.highlight { color:var(--red-accent); font-weight:600; }
 
-    .ts-flow-label {
-      font-size: 13px;
-      color: var(--text-sub);
-      line-height: 1.4;
-      transition: color 0.25s;
-    }
-
-    .ts-flow-item.active .ts-flow-label,
-    .ts-flow-item:hover .ts-flow-label {
-      color: var(--red-accent);
-      font-weight: 500;
-    }
-
-    /* Connecting line between dots */
-    .ts-flow-item::before {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 22px;
-      width: 2px;
-      height: calc(100% + 4px);
-      background: var(--pink-pale);
-    }
-    .ts-flow-item:last-child::before { display: none; }
-
-    /* Right content */
-    .ts-content { min-width: 0; }
-
-    /* ── SECTION ANCHORS ── */
-    .ts-section {
-      margin-bottom: 64px;
-      scroll-margin-top: 90px;
-    }
-
-    /* ── FIELD EXPLAIN BOX ── */
-    .field-box {
-      background: var(--white);
-      border: 1px solid rgba(232,170,170,0.5);
-      border-radius: 14px;
-      overflow: hidden;
-      margin: 20px 0;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      border-bottom: 1px solid rgba(232,170,170,0.3);
-    }
-    .field-row:last-child { border-bottom: none; }
-
-    .field-name {
-      padding: 14px 16px;
-      background: var(--pink-pale);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--navy);
-      border-right: 1px solid rgba(232,170,170,0.3);
-      display: flex;
-      align-items: center;
-    }
-
-    .field-desc {
-      padding: 14px 16px;
-      font-size: 13px;
-      color: var(--text-sub);
-      line-height: 1.65;
-    }
-
-    .field-desc strong { color: var(--navy); font-weight: 500; }
-    .field-desc .eg { display: block; margin-top: 4px; font-size: 12px; color: var(--red-accent); }
-    .field-desc .warn { display: block; margin-top: 4px; font-size: 12px; color: var(--red-accent); font-weight: 500; }
-
-    /* ── TAB SWITCHER ── */
-    .tab-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      border: 1px solid var(--pink-mid);
-      background: var(--white);
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--navy);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans TC', sans-serif;
-    }
-
-    .tab-btn:hover { border-color: var(--red-accent); color: var(--red-accent); }
-    .tab-btn.active { background: var(--red-accent); border-color: var(--red-accent); color: white; }
-
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .tab-panel-inner {
-      background: var(--pink-pale);
-      border-radius: 14px;
-      padding: 24px;
-    }
-
-    .tab-panel-inner h4 {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--navy);
-      margin-bottom: 12px;
-    }
-
-    .tab-steps { list-style: none; padding: 0; margin-bottom: 16px; }
-    .tab-steps li {
-      font-size: 14px;
-      color: var(--text-sub);
-      padding: 6px 0 6px 20px;
-      position: relative;
-      line-height: 1.6;
-    }
-    .tab-steps li::before {
-      content: '·';
-      position: absolute;
-      left: 0;
-      color: var(--red-accent);
-      font-size: 20px;
-      line-height: 1.1;
-    }
-
-    .tab-img {
-      width: 100%;
-      border-radius: 10px;
-      margin-top: 16px;
-      border: 1px solid rgba(232,170,170,0.4);
-    }
-
-    /* ── STATUS TABLE ── */
-    .status-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(232,170,170,0.4);
-      margin: 16px 0;
-    }
-    .status-table th {
-      background: var(--navy);
-      color: white;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      text-align: left;
-    }
-    .status-table td {
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--text-sub);
-      border-bottom: 1px solid rgba(232,170,170,0.3);
-    }
-    .status-table tr:last-child td { border-bottom: none; }
-    .status-table tr:nth-child(even) td { background: var(--pink-pale); }
-
-    .status-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    .badge-pending { background: #FFF3CD; color: #7A5A10; }
-    .badge-invoice { background: #D4EDDA; color: #1E5C35; }
-
-    /* ── MOBILE: hide left nav ── */
-    @media (max-width: 768px) {
-      .ts-layout {
-        grid-template-columns: 1fr;
-        padding: 32px 16px 60px;
-      }
-      .ts-flow-nav { display: none; }
-    }
+    /* Status table */
+    .status-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:14px; }
+    .status-table th { background:var(--navy); color:white; padding:10px 16px; text-align:left; font-weight:500; font-size:13px; }
+    .status-table td { padding:12px 16px; border-bottom:1px solid rgba(242,196,196,0.4); color:var(--text-sub); vertical-align:top; }
+    .status-table tr:last-child td { border-bottom:none; }
+    .status-table tr:nth-child(even) td { background:var(--pink-pale); }
+    .status-badge { display:inline-block; padding:3px 12px; border-radius:20px; font-size:12px; font-weight:500; white-space:nowrap; }
+    .status-badge.pending { background:#FFF3CD; color:#8B6914; }
+    .status-badge.invoice { background:#D4EDDA; color:#1E5C35; }
   </style>
 </head>
 <body>
+  <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImg" src="" alt="" />
+  </div>
+
   <header>
     <a class="logo" href="../index.html">Fieldglass <span>手冊</span></a>
     <nav>
@@ -254,14 +95,10 @@
   </header>
 
   <section class="page-hero">
-    <div class="page-hero-img">
-      <img src="../images/timesheet.png" alt="Timesheet" />
-    </div>
+    <div class="page-hero-img"><img src="../images/timesheet.png" alt="Timesheet" /></div>
     <div class="page-hero-text">
       <div class="breadcrumb">
-        <a href="../index.html">首頁</a>
-        <span class="breadcrumb-sep">/</span>
-        <span>Timesheet</span>
+        <a href="../index.html">首頁</a><span class="breadcrumb-sep">/</span><span>Timesheet</span>
       </div>
       <p class="page-eyebrow">Chapter 02</p>
       <h1 class="page-title"><strong>Timesheet</strong><br>出勤表填寫</h1>
@@ -270,398 +107,373 @@
   </section>
 
   <div class="ts-layout">
-
-    <!-- ── LEFT: STICKY FLOW NAV ── -->
+    <!-- Left sticky nav -->
     <nav class="ts-flow-nav">
-      <p class="ts-flow-nav-title">Timesheet 流程</p>
-      <a class="ts-flow-item" href="#section-create">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">建立 Timesheet</span>
-      </a>
-      <a class="ts-flow-item" href="#section-timeinout">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">填寫出勤時間</span>
-      </a>
-      <a class="ts-flow-item" href="#section-timeworked">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">填寫 Time Worked</span>
-      </a>
-      <a class="ts-flow-item" href="#section-situations">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">各種出勤狀況</span>
-      </a>
-      <a class="ts-flow-item" href="#section-submit">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">確認並提交</span>
-      </a>
-      <a class="ts-flow-item" href="#section-status">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">Timesheet 狀態</span>
-      </a>
-      <a class="ts-flow-item" href="#section-edit">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">需要修改？</span>
-      </a>
-      <a class="ts-flow-item" href="#section-deadline">
-        <span class="ts-flow-dot"></span>
-        <span class="ts-flow-label">提交期限</span>
-      </a>
+      <p class="ts-flow-label">本頁內容</p>
+      <div class="ts-flow-item" id="nav-overview"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-overview">介面說明</a></div>
+      <div class="ts-flow-item" id="nav-flow"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-flow">Timesheet 流程</a></div>
+      <div class="ts-flow-item" id="nav-create"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-create">建立 Timesheet</a></div>
+      <div class="ts-flow-item" id="nav-timeinout"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-timeinout">Step 1｜出勤時間</a></div>
+      <div class="ts-flow-item" id="nav-timeworked"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-timeworked">Step 2｜Time Worked</a></div>
+      <div class="ts-flow-item" id="nav-scenarios"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-scenarios">Step 3｜出勤狀況</a></div>
+      <div class="ts-flow-item" id="nav-submit"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-submit">確認並提交</a></div>
+      <div class="ts-flow-item" id="nav-status"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-status">狀態說明</a></div>
+      <div class="ts-flow-item" id="nav-edit"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-edit">需要修改？</a></div>
+      <div class="ts-flow-item" id="nav-deadline"><div class="ts-flow-dot"></div><a class="ts-flow-link" href="#section-deadline">提交期限</a></div>
     </nav>
 
-    <!-- ── RIGHT: CONTENT ── -->
     <div class="ts-content">
 
-      <!-- 建立 -->
-      <div class="ts-section" id="section-create">
-        <p class="section-label">建立 Timesheet</p>
-        <p style="font-size:15px;color:var(--text-sub);margin-bottom:16px;line-height:1.7">
-          依照實際出勤狀況填寫 Timesheet，完成後於期限內提交。
-        </p>
+      <!-- 介面說明 -->
+      <div class="content-section" id="section-overview">
+        <p class="section-label">Timesheet 介面說明</p>
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:12px">滑鼠移到圖片上可放大查看，點擊圖片可全螢幕檢視。</p>
+        <div class="ts-overview-wrap">
+          <img src="../images/screenshots/ts-overview.png" alt="Timesheet 介面說明" class="zoomable" onclick="openZoom(this)" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+          <div class="info-card">
+            <div class="info-card-label">Time Sheet 編號</div>
+            <div class="info-card-value" style="font-size:13px">UBRTS00XXXXX</div>
+            <div class="info-card-sub">每份 Timesheet 的識別編號</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">當月周次</div>
+            <div class="info-card-value" style="font-size:13px">Week 1–6</div>
+            <div class="info-card-sub">依週切換填寫，涵蓋整個月</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">出勤時間區域</div>
+            <div class="info-card-value" style="font-size:13px">Time in/time out</div>
+            <div class="info-card-sub">填寫上下班及午休時間</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Time Worked 區域</div>
+            <div class="info-card-value" style="font-size:13px">出勤時數計算</div>
+            <div class="info-card-sub">填寫各類時數，算錢的地方</div>
+          </div>
+        </div>
+        <div class="note" style="margin-top:16px">
+          <strong>注意：</strong>因是國外系統，不會針對台灣的國定假日做灰底顯示，填寫時須注意。
+        </div>
+      </div>
+
+      <!-- 流程 -->
+      <div class="content-section" id="section-flow">
+        <p class="section-label">Timesheet 流程</p>
         <div class="flow-h">
-          <div class="flow-bubble-h active">Create</div>
+          <a class="flow-bubble-h active" href="#section-create">建立 Timesheet</a>
           <span class="flow-arrow-h">→</span>
-          <div class="flow-bubble-h">Time Sheet</div>
+          <a class="flow-bubble-h" href="#section-timeinout">填寫出勤</a>
           <span class="flow-arrow-h">→</span>
-          <div class="flow-bubble-h">填寫出勤</div>
+          <a class="flow-bubble-h" href="#section-submit">送出 Submit</a>
           <span class="flow-arrow-h">→</span>
-          <div class="flow-bubble-h">Submit</div>
+          <div class="flow-bubble-h">主管審核</div>
+          <span class="flow-arrow-h">→</span>
+          <div class="flow-bubble-h">Agency 確認</div>
+          <span class="flow-arrow-h">→</span>
+          <div class="flow-bubble-h">Invoice ✓</div>
         </div>
-        <img src="../images/screenshots/ts-blank.png" alt="Timesheet 填寫畫面" style="width:100%;border-radius:12px;margin-top:8px;border:1px solid rgba(232,170,170,0.4)" />
       </div>
 
-      <!-- Time In / Out -->
-      <div class="ts-section" id="section-timeinout">
+      <!-- 建立 -->
+      <div class="content-section" id="section-create">
+        <p class="section-label">建立 Timesheet</p>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>建立方式</h3>
+            <p>點擊左上角 <strong>Create</strong>，選擇 <strong>Time Sheet</strong>，進入填寫畫面。</p>
+            <div class="flow-h" style="margin-top:8px">
+              <div class="flow-bubble-h active">Create</div>
+              <span class="flow-arrow-h">→</span>
+              <div class="flow-bubble-h">Time Sheet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1 Time In/Out -->
+      <div class="content-section" id="section-timeinout">
         <p class="section-label">Step 1｜填寫出勤時間</p>
-        <p style="font-size:15px;color:var(--text-sub);margin-bottom:20px;line-height:1.7">
-          每天上班、下班、午休的時間都填在這裡。<br>
-          你幾點到、幾點走、幾點開始休息——照實際狀況填就對了。
-        </p>
-
-        <div class="field-box">
-          <div class="field-row">
-            <div class="field-name">Time In</div>
-            <div class="field-desc">
-              你幾點到公司、開始上班，就填幾點。
-              <span class="eg">例如：早上九點到 → 填 09:00</span>
-            </div>
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:16px">每天上班、下班、午休的時間都填在這裡。你幾點到、幾點走、幾點開始休息——照實填就對了。</p>
+        <div class="side-layout">
+          <div>
+            <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+            <img src="../images/screenshots/ts-timeinout-blank.png" alt="Time In/Out 截圖" class="zoomable" onclick="openZoom(this)" style="width:100%" />
           </div>
-          <div class="field-row">
-            <div class="field-name">Meal Break 1 Out</div>
-            <div class="field-desc">
-              午休開始的時間。
-              <span class="eg">例如：13:00 開始休息 → 填 13:00</span>
-            </div>
+          <div>
+            <ul class="field-explain">
+              <li>
+                <div class="field-tag">Time In</div><br>
+                你幾點到公司、開始上班，就填幾點。<br>
+                <strong>例如：早上九點 → 09:00 AM</strong>
+              </li>
+              <li>
+                <div class="field-tag">Meal Break 1 Out</div><br>
+                午休開始時間。<br>
+                <strong>例如：12:00 PM 開始休息</strong>
+              </li>
+              <li>
+                <div class="field-tag">Meal Break 1 In</div><br>
+                午休結束，回到工作崗位的時間。<br>
+                <strong>例如：01:00 PM 回來</strong>
+              </li>
+              <li>
+                <div class="field-tag">Meal Break 2 / 3</div><br>
+                沒有其他休息時段，留空就好。<br>
+                依法工作 4H 需休息 30 分，若有加班或其他休息時間也請依實際填寫。
+              </li>
+              <li>
+                <div class="field-tag">Time Out</div><br>
+                你幾點離開公司、結束工作。<br>
+                <strong>例如：下午六點 → 06:00 PM</strong>
+              </li>
+            </ul>
+            <div class="field-warn">⚠️ ST / MO 這行<strong>不要填</strong>！系統會自動計算，你動到這行反而會出錯。</div>
+            <div class="note" style="margin-top:12px"><strong>小技巧：</strong>點擊日期欄位旁的複製圖示，可以直接複製前一天的時數，省去重複輸入。</div>
           </div>
-          <div class="field-row">
-            <div class="field-name">Meal Break 1 In</div>
-            <div class="field-desc">
-              午休結束、回到工作崗位的時間。
-              <span class="eg">例如：14:00 回來 → 填 14:00</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Meal Break 2 / 3</div>
-            <div class="field-desc">
-              沒有其他休息時段的話，留空就好。
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Time Out</div>
-            <div class="field-desc">
-              你幾點離開公司、結束工作，就填幾點。
-              <span class="eg">例如：下午六點下班 → 填 18:00</span>
-            </div>
-          </div>
-        </div>
-
-        <img src="../images/screenshots/ts-timeinout-example.png" alt="Time In/Out 填寫範例" style="width:100%;border-radius:12px;margin-top:8px;border:1px solid rgba(232,170,170,0.4)" />
-
-        <div class="note" style="margin-top:16px">
-          <strong>小提示：</strong>點擊日期欄位旁的複製圖示，可以直接複製前一天的時數，省去重複輸入。
         </div>
       </div>
 
-      <!-- Time Worked -->
-      <div class="ts-section" id="section-timeworked">
+      <!-- Step 2 Time Worked -->
+      <div class="content-section" id="section-timeworked">
         <p class="section-label">Step 2｜填寫 Time Worked</p>
-        <p style="font-size:15px;color:var(--text-sub);margin-bottom:20px;line-height:1.7">
-          這裡是「算錢的地方」——填錯了，薪資就會有問題。<br>
-          每一行代表不同的計薪項目，對照你今天的狀況填入對應時數。
-        </p>
-
-        <div class="field-box">
-          <div class="field-row">
-            <div class="field-name">ST / Mo</div>
-            <div class="field-desc">
-              <span class="warn">⛔ 這行不要填，系統會自己計算。</span>
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:4px">這裡是「算錢的地方」——填錯了，薪資就會有問題。</p>
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:16px">每一行代表不同的計薪項目，對照你今天的狀況填入對應時數。</p>
+        <div class="side-layout">
+          <div>
+            <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+            <img src="../images/screenshots/ts-timeworked-blank.png" alt="Time Worked 截圖" class="zoomable" onclick="openZoom(this)" style="width:100%" />
+          </div>
+          <div>
+            <ul class="field-explain">
+              <li>
+                <div class="field-tag">ST / Mo</div><br>
+                <span style="color:var(--red-accent);font-weight:600">⛔ 勿填</span>，系統自己計算。
+              </li>
+              <li>
+                <div class="field-tag">Taiwan Standard Calculated Hourly</div><br>
+                你今天實際上班幾小時，就填幾小時。<br>
+                <strong>例如：9:00 上班、18:00 下班、午休 1 小時 → 填 8.0</strong>
+              </li>
+              <li>
+                <div class="field-tag">Taiwan Overtime Less or = 2 Hrs</div><br>
+                平日加班，前 2 小時以內的時數填這裡。<br>
+                <strong>例如：加班 1.5 小時 → 填 1.5</strong>
+              </li>
+              <li>
+                <div class="field-tag">Taiwan Overtime Over 2 Hrs</div><br>
+                平日加班，超過 2 小時的部分填這裡。<br>
+                <strong>例如：加班 3.5 小時 → 前 2 小時上面填行，這行填 1.5</strong>
+              </li>
+              <li>
+                <div class="field-tag">Taiwan Overtime Holiday</div><br>
+                國定假日有上班時填這裡。<br>
+                不管實際上幾小時（1–8H），填 8.0
+              </li>
+              <li>
+                <div class="field-tag">Taiwan Annual Leave / Sick Leave</div><br>
+                今天有請支薪假（特休、時數病假）的話，在這裡填請假時數。<br>
+                <strong>例如：請半天特休 → 填 4.0</strong>
+              </li>
+            </ul>
+            <div class="note" style="margin-top:12px">
+              <strong>給薪假</strong>：最小單位 0.5 日，不足以 0.5 日計。<br>
+              <strong>扣薪假</strong>：最小單位 1 小時，不足以 1 小時計。<br>
+              如果對時數有疑問，請先存草稿，再聯繫薪酬窗口確認。
             </div>
           </div>
-          <div class="field-row">
-            <div class="field-name">Taiwan Standard<br>Calculated Hourly</div>
-            <div class="field-desc">
-              你今天實際上班幾小時，就填幾小時。
-              <span class="eg">例如：9:00 上班、18:00 下班、午休 1 小時 → 填 8.0</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Taiwan Overtime<br>Less or = 2 Hrs</div>
-            <div class="field-desc">
-              平日加班，前 2 小時以內的時數填這裡。
-              <span class="eg">例如：加班 1.5 小時 → 填 1.5</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Taiwan Overtime<br>Over 2 Hrs</div>
-            <div class="field-desc">
-              平日加班，超過 2 小時的部分填這裡。
-              <span class="eg">例如：加班 3.5 小時 → 前 2 小時填上面那行，這行填 1.5</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Taiwan Overtime<br>Holiday</div>
-            <div class="field-desc">
-              國定假日有上班時填這裡。
-              <span class="eg">不管實際上班幾小時（1–8H），填 8.0</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-name">Taiwan Annual<br>Leave / Sick Leave</div>
-            <div class="field-desc">
-              今天有請支薪假（特休、時數病假）的話，在這裡填請假時數。
-              <span class="eg">例如：請半天特休 → 填 4.0</span>
-            </div>
-          </div>
-        </div>
-
-        <img src="../images/screenshots/ts-timeworked-example.png" alt="Time Worked 填寫範例" style="width:100%;border-radius:12px;margin-top:8px;border:1px solid rgba(232,170,170,0.4)" />
-
-        <div class="note" style="margin-top:16px">
-          <strong>給薪假：</strong>請假最小單位為 0.5 日，不足 0.5 日以 0.5 日計。<br>
-          <strong>扣薪假：</strong>請假最小單位為 1 小時，不足 1 小時以 1 小時計。<br>
-          如果對時數有問題，請先存成草稿，並尋求薪酬窗口協助。
         </div>
       </div>
 
-      <!-- 各種出勤狀況 -->
-      <div class="ts-section" id="section-situations">
+      <!-- Step 3 各種出勤狀況 -->
+      <div class="content-section" id="section-scenarios">
         <p class="section-label">Step 3｜各種出勤狀況填寫</p>
-        <p style="font-size:15px;color:var(--text-sub);margin-bottom:20px;line-height:1.7">
-          選擇你今天的狀況，查看對應的填寫方式。
-        </p>
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:20px">選擇今天的出勤狀況，查看對應的填寫方式與示範截圖。</p>
 
-        <div class="tab-buttons">
+        <div class="tab-bar">
           <button class="tab-btn active" onclick="switchTab('normal',this)">正常上班</button>
-          <button class="tab-btn" onclick="switchTab('unpaid',this)">全天扣薪假</button>
-          <button class="tab-btn" onclick="switchTab('paid',this)">特休</button>
-          <button class="tab-btn" onclick="switchTab('halfday',this)">半日特休</button>
+          <button class="tab-btn" onclick="switchTab('unpaid',this)">扣薪假</button>
+          <button class="tab-btn" onclick="switchTab('paid',this)">有薪假</button>
+          <button class="tab-btn" onclick="switchTab('halfday',this)">半日有薪假</button>
           <button class="tab-btn" onclick="switchTab('holiday',this)">國定假日</button>
         </div>
 
         <!-- 正常上班 -->
         <div class="tab-panel active" id="tab-normal">
-          <div class="tab-panel-inner">
-            <h4>💼 正常上班</h4>
-            <ul class="tab-steps">
-              <li>Time In：填你實際到公司的時間</li>
-              <li>Time Out：填你實際離開的時間</li>
-              <li>Meal Break：填午休開始和結束的時間</li>
-              <li>Taiwan Standard Calculated Hourly：填你實際上班的時數<br>
-                <span style="font-size:12px;color:var(--red-accent)">例如：9:00–18:00，午休 1 小時 → 填 8.0</span>
-              </li>
-            </ul>
-            <img class="tab-img" src="../images/screenshots/ts-timeinout-example.png" alt="正常上班範例" />
+          <div class="side-layout wide-img">
+            <div>
+              <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+              <img src="../images/screenshots/ts-normal.png" alt="正常上班填寫示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
+            </div>
+            <div class="scenario-card">
+              <h4 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:14px">✅ 正常上班</h4>
+              <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value highlight">填實際上班時間</span></div>
+              <div class="scenario-row"><span class="scenario-field">Meal Break Out/In</span><span class="scenario-value highlight">填午休開始／結束</span></div>
+              <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value highlight">填實際下班時間</span></div>
+              <div class="scenario-row"><span class="scenario-field">Taiwan Standard</span><span class="scenario-value highlight">填實際上班時數<br>例：8.0</span></div>
+              <div class="scenario-row"><span class="scenario-field">其餘欄位</span><span class="scenario-value empty">留空</span></div>
+            </div>
           </div>
         </div>
 
-        <!-- 全天扣薪假 -->
+        <!-- 扣薪假 -->
         <div class="tab-panel" id="tab-unpaid">
-          <div class="tab-panel-inner">
-            <h4>📋 全天扣薪假（事假、病假等）</h4>
-            <ul class="tab-steps">
-              <li>Time In / Time Out：<strong>留白，不用填</strong></li>
-              <li>Meal Break：<strong>留白，不用填</strong></li>
-              <li>Time Worked 所有欄位：<strong>全部留白</strong></li>
-              <li>這天的時數不填，HR 會依排班記錄處理扣薪</li>
-            </ul>
-            <div class="note" style="margin-top:0">
-              <strong>記住：</strong>扣薪假的請假時數最小單位是 1 小時，不足 1 小時以 1 小時計。
+          <div class="side-layout wide-img">
+            <div>
+              <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+              <img src="../images/screenshots/ts-unpaid.png" alt="扣薪假填寫示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
+            </div>
+            <div class="scenario-card">
+              <h4 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:8px">📋 扣薪假</h4>
+              <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px;line-height:1.6">全天不上班的扣薪假，Timesheet 上什麼都不用填。HR 會依排班記錄處理，扣除該天時數。</p>
+              <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Meal Break</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Time Worked 全部</span><span class="scenario-value empty">留空</span></div>
+              <div class="note" style="margin-top:12px">最小單位 1 小時，不足以 1 小時計。</div>
             </div>
           </div>
         </div>
 
-        <!-- 特休 -->
+        <!-- 有薪假 -->
         <div class="tab-panel" id="tab-paid">
-          <div class="tab-panel-inner">
-            <h4>🌿 特休（全天）</h4>
-            <ul class="tab-steps">
-              <li>Time In / Time Out：<strong>留白，不用填</strong></li>
-              <li>Meal Break：<strong>留白，不用填</strong></li>
-              <li>Taiwan Annual Leave / Sick Leave：填 <strong>8.0</strong>（全天請假時數）</li>
-            </ul>
-            <div class="note" style="margin-top:0">
-              <strong>記住：</strong>給薪假最小單位是 0.5 日（4 小時），不足 0.5 日以 0.5 日計。
+          <div class="side-layout wide-img">
+            <div>
+              <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+              <img src="../images/screenshots/ts-paid.png" alt="有薪假填寫示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
             </div>
-            <img class="tab-img" src="../images/screenshots/ts-timeworked-example.png" alt="特休範例" />
+            <div class="scenario-card">
+              <h4 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:8px">🌿 有薪假（全天）</h4>
+              <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px;line-height:1.6">全天有薪假（特休、支薪病假等），不用填 Time In / Time Out。在 Annual Leave 欄填入請假時數。</p>
+              <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Taiwan Standard</span><span class="scenario-value empty">留空</span></div>
+              <div class="scenario-row"><span class="scenario-field">Annual Leave / Sick Leave</span><span class="scenario-value highlight">填請假時數<br>例：全天 → 8.0</span></div>
+              <div class="note" style="margin-top:12px">最小單位 0.5 日，不足以 0.5 日計。</div>
+            </div>
           </div>
         </div>
 
-        <!-- 半日特休 -->
+        <!-- 半日有薪假 -->
         <div class="tab-panel" id="tab-halfday">
-          <div class="tab-panel-inner">
-            <h4>🌿 半日特休</h4>
-            <ul class="tab-steps">
-              <li>Time In：填你實際上班的時間（只有半天有上班）</li>
-              <li>Time Out：填你實際離開的時間</li>
-              <li>Meal Break：有跨午休時段才填，沒有就留空</li>
-              <li>Taiwan Standard Calculated Hourly：填你實際上班的時數<br>
-                <span style="font-size:12px;color:var(--red-accent)">例如：下午上班 → 填 4.0</span>
-              </li>
-              <li>Taiwan Annual Leave / Sick Leave：填請假的時數<br>
-                <span style="font-size:12px;color:var(--red-accent)">半天特休 → 填 4.0</span>
-              </li>
-            </ul>
-            <div class="note" style="margin-top:0">
-              <strong>注意：</strong>不管你實際上班幾小時，支薪假的部分固定是 4H（0.5 日），兩個欄位加起來等於 8H。
+          <div class="side-layout wide-img">
+            <div>
+              <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+              <img src="../images/screenshots/ts-halfday.png" alt="半日有薪假填寫示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
             </div>
-            <img class="tab-img" src="../images/screenshots/ts-timeworked-example.png" alt="半日特休範例" />
+            <div class="scenario-card">
+              <h4 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:8px">🌿 半日有薪假</h4>
+              <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px;line-height:1.6">有上班的那半天要填 Time In / Time Out。Time Worked 分別填實際上班時數和請假時數，合計應為 8 小時。</p>
+              <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value highlight">填實際上班時間</span></div>
+              <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value highlight">填實際下班時間</span></div>
+              <div class="scenario-row"><span class="scenario-field">Taiwan Standard</span><span class="scenario-value highlight">填實際上班時數<br>例：4.0</span></div>
+              <div class="scenario-row"><span class="scenario-field">Annual Leave / Sick Leave</span><span class="scenario-value highlight">填請假時數<br>例：4.0</span></div>
+              <div class="note" style="margin-top:12px">半日有薪假固定 4 小時，不能請 2 小時或 3 小時。</div>
+            </div>
           </div>
         </div>
 
         <!-- 國定假日 -->
         <div class="tab-panel" id="tab-holiday">
-          <div class="tab-panel-inner">
-            <h4>🎌 國定假日</h4>
+          <p style="font-size:14px;color:var(--text-sub);margin-bottom:20px">國定假日分兩種情況，請依實際狀況選擇：</p>
 
-            <p style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:12px">🏠 沒有上班（放假）</p>
-            <ul class="tab-steps">
-              <li>Time In / Time Out：<strong>留白</strong></li>
-              <li>Taiwan Standard Calculated Hourly：填 <strong>8.0</strong>（當日應支薪的正常工時）</li>
-              <li>Taiwan Overtime Holiday：<strong>留白</strong></li>
-            </ul>
-
-            <div style="border-top:1px solid rgba(232,170,170,0.4);margin:16px 0"></div>
-
-            <p style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:12px">🏢 有去上班</p>
-            <ul class="tab-steps">
-              <li>Time In / Time Out：填實際上下班時間</li>
-              <li>Taiwan Standard Calculated Hourly：填 <strong>8.0</strong></li>
-              <li>Taiwan Overtime Holiday：填 <strong>8.0</strong>（不管實際上班幾小時，1–8H 一律填 8.0）</li>
-              <li>若上班超過 8 小時，超過的部分填入平日加班欄位</li>
-            </ul>
-
-            <div class="note" style="margin-top:8px">
-              <strong>💡 記住：</strong>Time Worked 填寫的是正常應得工時，不是加班時數。
+          <div style="margin-bottom:32px">
+            <p style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px">🎌 無上班（放假）</p>
+            <div class="side-layout wide-img">
+              <div>
+                <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+                <img src="../images/screenshots/ts-holiday-off.png" alt="國定假日無上班示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
+              </div>
+              <div class="scenario-card">
+                <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value empty">留空</span></div>
+                <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value empty">留空</span></div>
+                <div class="scenario-row"><span class="scenario-field">Taiwan Standard</span><span class="scenario-value highlight">填正常工時<br>例：8.0</span></div>
+                <div class="scenario-row"><span class="scenario-field">Taiwan Overtime Holiday</span><span class="scenario-value empty">留空</span></div>
+                <div class="note" style="margin-top:12px"><strong>💡 記住：</strong>Time Worked 填的是正常應得工時，不是加班時數。</div>
+              </div>
             </div>
-            <img class="tab-img" src="../images/screenshots/ts-timeworked-example.png" alt="國定假日範例" />
           </div>
-        </div>
-      </div>
 
-      <!-- 加班 -->
-      <div class="ts-section" id="section-overtime">
-        <p class="section-label">加班填寫</p>
-        <div class="note" style="border-color:var(--red-accent);background:#fff0f0">
-          <strong>⚠️ 重要：</strong>加班前請先取得主管事前核准。未事先取得主管核准的加班，恕無法受理加班費。
-        </div>
-        <div class="step" style="margin-top:20px">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <h3>加班前</h3>
-            <p>取得主管事前書面核准，並保留核准紀錄提供給 HR。</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <h3>加班後填寫</h3>
-            <ul>
-              <li>平日加班前 2 小時 → Taiwan Overtime Less or = 2 Hrs</li>
-              <li>平日加班超過 2 小時的部分 → Taiwan Overtime Over 2 Hrs</li>
-            </ul>
-            <div class="note">
-              <strong>範例：</strong>加班 3.5 小時 → Less or = 2 Hrs 填 2.0，Over 2 Hrs 填 1.5
+          <div>
+            <p style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px">🎌 有上班（加班）</p>
+            <div class="side-layout wide-img">
+              <div>
+                <p style="font-size:12px;color:var(--text-sub);margin-bottom:6px">點擊圖片可放大</p>
+                <img src="../images/screenshots/ts-holiday-work.png" alt="國定假日有上班示範" class="zoomable" onclick="openZoom(this)" style="width:100%" />
+              </div>
+              <div class="scenario-card">
+                <div class="scenario-row"><span class="scenario-field">Time In</span><span class="scenario-value highlight">填實際上班時間</span></div>
+                <div class="scenario-row"><span class="scenario-field">Time Out</span><span class="scenario-value highlight">填實際下班時間</span></div>
+                <div class="scenario-row"><span class="scenario-field">Taiwan Standard</span><span class="scenario-value highlight">填正常工時<br>例：8.0</span></div>
+                <div class="scenario-row"><span class="scenario-field">Taiwan Overtime Holiday</span><span class="scenario-value highlight">固定填 8.0<br>（不管實際上幾小時）</span></div>
+                <div class="note" style="margin-top:12px">超過 8 小時的部分，以一般加班費率另外計算。</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 提交 -->
-      <div class="ts-section" id="section-submit">
+      <!-- 確認並提交 -->
+      <div class="content-section" id="section-submit">
         <p class="section-label">確認並提交</p>
-        <p style="font-size:15px;color:var(--text-sub);margin-bottom:16px;line-height:1.7">
-          確認出勤、請假及加班資料無誤後，點選 <strong>Submit</strong> 完成提交。
-        </p>
-        <div class="note">
+        <p style="font-size:14px;color:var(--text-sub);margin-bottom:12px">確認出勤、請假及加班資料無誤後，點選 <strong>Submit</strong> 完成提交。</p>
+        <div class="note" style="background:#fff0f0;border-color:var(--red-accent)">
           <strong>提交後注意：</strong>Timesheet 送出後將進入審核流程，請確認資料正確再送出。
         </div>
-        <div class="img-placeholder" style="margin-top:16px">截圖 — 待上傳</div>
       </div>
 
-      <!-- 狀態 -->
-      <div class="ts-section" id="section-status">
+      <!-- 狀態說明 -->
+      <div class="content-section" id="section-status">
         <p class="section-label">Timesheet 狀態</p>
         <table class="status-table">
-          <tr>
-            <th>狀態</th>
-            <th>說明</th>
-          </tr>
-          <tr>
-            <td><span class="status-badge badge-pending">Pending Approval</span></td>
-            <td>已送出，等待主管核准。若長時間未更新，可提醒主管進行審核。</td>
-          </tr>
-          <tr>
-            <td><span class="status-badge badge-invoice">Invoice</span></td>
-            <td>主管已核准，等待 Agency 確認，即將進入薪資計算。</td>
-          </tr>
+          <thead><tr><th>狀態</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="status-badge pending">Pending Approval</span></td>
+              <td>已送出，等待主管核准。若長時間未更新，可提醒主管進行審核。</td>
+            </tr>
+            <tr>
+              <td><span class="status-badge invoice">Invoice</span></td>
+              <td>主管已核准，等待 Agency 確認，即將進入薪資計算。</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
-      <!-- 修改 -->
-      <div class="ts-section" id="section-edit">
+      <!-- 需要修改 -->
+      <div class="content-section" id="section-edit">
         <p class="section-label">需要修改 Timesheet？</p>
         <div class="info-grid">
           <div class="info-card">
             <div class="info-card-label">狀態：Pending Approval</div>
             <div class="info-card-value">請聯繫主管退回</div>
-            <div class="info-card-sub">由主管退回（Withdraw）後才能修改</div>
+            <div class="info-card-sub">由主管將 Timesheet 退回後，才能進行修改。</div>
           </div>
           <div class="info-card">
-            <div class="info-card-label">狀態：Approved</div>
+            <div class="info-card-label">狀態：Approved / Invoice</div>
             <div class="info-card-value">請聯繫薪酬窗口</div>
-            <div class="info-card-sub">提供修改內容及原因給 Sandy / Isabella</div>
+            <div class="info-card-sub">提供修改內容及原因，由薪酬窗口協助處理。</div>
           </div>
         </div>
       </div>
 
-      <!-- 期限 -->
-      <div class="ts-section" id="section-deadline">
+      <!-- 提交期限 -->
+      <div class="content-section" id="section-deadline">
         <p class="section-label">提交期限</p>
-        <div class="note" style="border-color:var(--red-accent);background:#fff0f0;font-size:16px">
-          <strong>每月最後一個上班日 23:59 前</strong><br>
+        <div class="note" style="font-size:15px;background:#fff0f0;border-color:var(--red-accent)">
+          <strong>每月最後一個上班日　23:59 前</strong><br>
           請務必於期限前完成提交。逾期提交可能影響當月薪資核算。
         </div>
       </div>
 
-      <!-- 模擬器入口 -->
-      <div style="background:var(--pink-pale);border-radius:16px;padding:28px 32px;margin-bottom:40px;text-align:center">
-        <p style="font-size:14px;color:var(--text-sub);margin-bottom:12px">不確定今天該怎麼填？</p>
-        <a href="simulator.html" style="display:inline-block;background:var(--red-accent);color:white;padding:12px 28px;border-radius:24px;text-decoration:none;font-size:15px;font-weight:500">
-          開啟 Timesheet 模擬器 →
-        </a>
-      </div>
-
-    </div><!-- end ts-content -->
-  </div><!-- end ts-layout -->
+    </div>
+  </div>
 
   <div class="page-nav" style="max-width:960px">
-    <a href="login.html" class="prev">
-      <span class="nav-direction">← 上一章</span>
-      <span class="nav-title">First Login</span>
-    </a>
-    <a href="simulator.html" class="next">
-      <span class="nav-direction">下一章 →</span>
-      <span class="nav-title">Timesheet 模擬器</span>
-    </a>
+    <a href="login.html" class="prev"><span class="nav-direction">← 上一章</span><span class="nav-title">First Login</span></a>
+    <a href="simulator.html" class="next"><span class="nav-direction">模擬器 →</span><span class="nav-title">Timesheet 模擬器</span></a>
   </div>
 
   <footer>
@@ -671,33 +483,34 @@
 
   <script src="../js/accordion.js"></script>
   <script>
-    // Tab switcher
+    function openZoom(img) { document.getElementById('zoomImg').src=img.src; document.getElementById('zoomOverlay').classList.add('active'); }
+    function closeZoom() { document.getElementById('zoomOverlay').classList.remove('active'); }
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeZoom(); });
+
     function switchTab(id, btn) {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + id).classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('tab-'+id).classList.add('active');
       btn.classList.add('active');
     }
 
-    // Scroll-linked left nav highlight
-    const navItems = document.querySelectorAll('.ts-flow-item');
-    const sections = document.querySelectorAll('.ts-section');
+    const sections = ['section-overview','section-flow','section-create','section-timeinout','section-timeworked','section-scenarios','section-submit','section-status','section-edit','section-deadline'];
+    const navMap = {'section-overview':'nav-overview','section-flow':'nav-flow','section-create':'nav-create','section-timeinout':'nav-timeinout','section-timeworked':'nav-timeworked','section-scenarios':'nav-scenarios','section-submit':'nav-submit','section-status':'nav-status','section-edit':'nav-edit','section-deadline':'nav-deadline'};
 
     function updateNav() {
-      let current = '';
-      sections.forEach(sec => {
-        if (window.scrollY + window.innerHeight * 0.35 >= sec.offsetTop) {
-          current = sec.id;
-        }
-      });
-      navItems.forEach(item => {
-        const href = item.getAttribute('href').replace('#','');
-        item.classList.toggle('active', href === current);
-      });
+      const scrollY = window.scrollY + window.innerHeight*0.35;
+      let current = sections[0];
+      sections.forEach(id => { const el=document.getElementById(id); if(el&&el.offsetTop<=scrollY) current=id; });
+      document.querySelectorAll('.ts-flow-item').forEach(el=>el.classList.remove('active'));
+      const navEl = document.getElementById(navMap[current]);
+      if(navEl) navEl.classList.add('active');
     }
-
-    window.addEventListener('scroll', updateNav, { passive: true });
+    window.addEventListener('scroll', updateNav, {passive:true});
     updateNav();
+
+    document.querySelectorAll('a.flow-bubble-h[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); const t=document.querySelector(a.getAttribute('href')); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); });
+    });
   </script>
 </body>
 </html>

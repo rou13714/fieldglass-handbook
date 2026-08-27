@@ -6,8 +6,20 @@
   <title>首次登入 — Fieldglass 手冊</title>
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/inner.css" />
+  <style>
+    /* Zoomable image */
+    .zoomable { cursor: zoom-in; transition: transform 0.2s ease; border-radius: 12px; display: block; width: 100%; border: 1px solid rgba(232,170,170,0.4); }
+    .zoomable:hover { transform: scale(1.02); box-shadow: 0 8px 32px rgba(44,61,90,0.15); }
+    .zoom-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out; }
+    .zoom-overlay.active { display: flex; }
+    .zoom-overlay img { max-width: 92vw; max-height: 92vh; border-radius: 10px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  </style>
 </head>
 <body>
+  <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImg" src="" alt="" />
+  </div>
+
   <header>
     <a class="logo" href="../index.html">Fieldglass <span>手冊</span></a>
     <nav>
@@ -40,24 +52,26 @@
     <!-- 平台介紹 -->
     <div class="content-section">
       <p class="section-label">這個平台是做什麼的？</p>
-      <div class="intro-block">
-        <h3>Fieldglass 使用用途</h3>
-        <ul>
-          <li>填寫出勤（Timesheet）</li>
-          <li>提交代墊費用（Expense Sheet）</li>
-        </ul>
-      </div>
-      <div class="intro-block">
-        <h3>HR Portal 平台</h3>
-        <ul>
-          <li>薪資查詢</li>
-          <li>個人資料異動</li>
-          <li>勞退自提</li>
-        </ul>
-        <a href="https://hrportal.adecco.com.tw/hrportal/Prod/Mobile/" target="_blank" rel="noopener"
-           style="display:inline-block;margin-top:14px;font-size:14px;font-weight:500;color:var(--red-accent);text-decoration:none;border:1px solid var(--pink-mid);padding:8px 18px;border-radius:20px;transition:all 0.2s">
-          前往 HR Portal →
-        </a>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="intro-block" style="margin-bottom:0">
+          <h3>Fieldglass 使用用途</h3>
+          <ul>
+            <li>填寫出勤（Timesheet）</li>
+            <li>提交代墊費用（Expense Sheet）</li>
+          </ul>
+        </div>
+        <div class="intro-block" style="margin-bottom:0">
+          <h3>HR Portal 平台</h3>
+          <ul>
+            <li>薪資查詢</li>
+            <li>個人資料異動</li>
+            <li>勞退自提</li>
+          </ul>
+          <a href="https://hrportal.adecco.com.tw/hrportal/Prod/Mobile/" target="_blank" rel="noopener"
+             style="display:inline-block;margin-top:14px;font-size:14px;font-weight:500;color:var(--red-accent);text-decoration:none;border:1px solid var(--pink-mid);padding:8px 18px;border-radius:20px">
+            前往 HR Portal →
+          </a>
+        </div>
       </div>
     </div>
 
@@ -87,7 +101,7 @@
         </div>
       </div>
 
-      <!-- Step 2 -->
+      <!-- Step 2 (no image) -->
       <div class="step">
         <div class="step-num">S2</div>
         <div class="step-body">
@@ -98,11 +112,10 @@
             <li>完成後，即代表 Fieldglass 帳號已啟用</li>
             <li>請使用 Username 及新設定的密碼登入 Fieldglass</li>
           </ul>
-          <img src="../images/screenshots/login-help.png" alt="需要登入協助" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
         </div>
       </div>
 
-      <!-- Step 3 -->
+      <!-- Step 3 with zoomable image -->
       <div class="step">
         <div class="step-num">S3</div>
         <div class="step-body">
@@ -115,7 +128,8 @@
               <div class="info-card-sub">操作路徑：Settings → Time Zone → Asia/Taipei</div>
             </div>
           </div>
-          <img src="../images/screenshots/timezone.png" alt="設定時區" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
+          <p style="font-size:12px;color:var(--text-sub);margin:12px 0 6px">點擊圖片可放大</p>
+          <img class="zoomable" src="../images/screenshots/timezone.png" alt="設定時區" onclick="openZoom(this)" />
           <div class="note" style="margin-top:16px">
             <strong>⚠️ 重要提醒：</strong>請確認時區為 Asia/Taipei，再開始填寫 Timesheet。
           </div>
@@ -126,7 +140,6 @@
     <!-- 忘記密碼 -->
     <div class="content-section">
       <p class="section-label">忘記密碼怎麼辦？</p>
-
       <div class="step">
         <div class="step-num">方1</div>
         <div class="step-body">
@@ -142,10 +155,10 @@
             </li>
             <li>至信箱收取重設信件，依指示完成密碼重設</li>
           </ul>
-          <img src="../images/screenshots/login-popup.png" alt="登入協助彈窗" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
+          <p style="font-size:12px;color:var(--text-sub);margin:12px 0 6px">點擊圖片可放大</p>
+          <img class="zoomable" src="../images/screenshots/login-popup.png" alt="登入協助彈窗" onclick="openZoom(this)" />
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">方2</div>
         <div class="step-body">
@@ -158,19 +171,15 @@
     <!-- 常見問題 -->
     <div class="content-section">
       <p class="section-label">常見登入問題</p>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">找不到開通信件</span>
           <span class="accordion-icon">+</span>
         </button>
         <div class="accordion-body">
-          <div class="accordion-body-inner">
-            請至私人信箱搜尋「Fieldglass」，並一併確認垃圾郵件匣。
-          </div>
+          <div class="accordion-body-inner">請至私人信箱搜尋「Fieldglass」，並一併確認垃圾郵件匣。</div>
         </div>
       </div>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">開通連結已過期</span>
@@ -179,23 +188,19 @@
         <div class="accordion-body">
           <div class="accordion-body-inner">
             請至 Fieldglass 登入頁，點擊「需要登入協助？」，使用數位助理功能選擇「忘記密碼」或「重新傳送邀請」。
-            <img src="../images/screenshots/login-popup.png" alt="登入協助彈窗" />
+            <img class="zoomable" src="../images/screenshots/login-popup.png" alt="登入協助彈窗" onclick="openZoom(this)" style="margin-top:12px" />
           </div>
         </div>
       </div>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">系統登不進去</span>
           <span class="accordion-icon">+</span>
         </button>
         <div class="accordion-body">
-          <div class="accordion-body-inner">
-            月底系統可能較為繁忙，請稍後再嘗試登入。若問題持續，請聯繫藝珂顧問。
-          </div>
+          <div class="accordion-body-inner">月底系統可能較為繁忙，請稍後再嘗試登入。若問題持續，請聯繫藝珂顧問。</div>
         </div>
       </div>
-
     </div>
 
   </div>
@@ -216,5 +221,10 @@
     <span class="footer-copy">僅供內部使用</span>
   </footer>
   <script src="../js/accordion.js"></script>
+  <script>
+    function openZoom(img) { document.getElementById('zoomImg').src = img.src; document.getElementById('zoomOverlay').classList.add('active'); }
+    function closeZoom() { document.getElementById('zoomOverlay').classList.remove('active'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+  </script>
 </body>
 </html>
