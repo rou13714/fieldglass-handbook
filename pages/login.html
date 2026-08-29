@@ -6,8 +6,18 @@
   <title>首次登入 — Fieldglass 手冊</title>
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/inner.css" />
+  <style>
+    .zoom-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out}
+    .zoom-overlay.active{display:flex}
+    .zoom-overlay img{max-width:92vw;max-height:92vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5)}
+    .zoomable{cursor:zoom-in;transition:transform 0.2s;border-radius:12px;display:block;border:1px solid rgba(232,170,170,0.4)}
+    .zoomable:hover{transform:scale(1.015);box-shadow:0 8px 32px rgba(44,61,90,0.15)}
+  </style>
 </head>
 <body>
+  <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImg" src="" alt="" />
+  </div>
   <header>
     <a class="logo" href="../index.html">Fieldglass <span>手冊</span></a>
     <nav>
@@ -20,15 +30,9 @@
   </header>
 
   <section class="page-hero">
-    <div class="page-hero-img">
-      <img src="../images/login.png" alt="Getting Started" />
-    </div>
+    <div class="page-hero-img"><img src="../images/login.png" alt="Getting Started" /></div>
     <div class="page-hero-text">
-      <div class="breadcrumb">
-        <a href="../index.html">首頁</a>
-        <span class="breadcrumb-sep">/</span>
-        <span>首次登入</span>
-      </div>
+      <div class="breadcrumb"><a href="../index.html">首頁</a><span class="breadcrumb-sep">/</span><span>首次登入</span></div>
       <p class="page-eyebrow">Chapter 01</p>
       <h1 class="page-title">Getting <strong>Started</strong></h1>
       <p class="page-desc">第一次使用 Fieldglass 時，請依照以下步驟完成帳號啟用及基本設定。</p>
@@ -37,35 +41,34 @@
 
   <div class="page-content">
 
-    <!-- 平台介紹 -->
     <div class="content-section">
       <p class="section-label">這個平台是做什麼的？</p>
-      <div class="intro-block">
-        <h3>Fieldglass 使用用途</h3>
-        <ul>
-          <li>填寫出勤（Timesheet）</li>
-          <li>提交代墊費用（Expense Sheet）</li>
-        </ul>
-      </div>
-      <div class="intro-block">
-        <h3>HR Portal 平台</h3>
-        <ul>
-          <li>薪資查詢</li>
-          <li>個人資料異動</li>
-          <li>勞退自提</li>
-        </ul>
-        <a href="https://hrportal.adecco.com.tw/hrportal/Prod/Mobile/" target="_blank" rel="noopener"
-           style="display:inline-block;margin-top:14px;font-size:14px;font-weight:500;color:var(--red-accent);text-decoration:none;border:1px solid var(--pink-mid);padding:8px 18px;border-radius:20px;transition:all 0.2s">
-          前往 HR Portal →
-        </a>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="intro-block" style="margin-bottom:0">
+          <h3>Fieldglass 使用用途</h3>
+          <ul>
+            <li>填寫出勤（Timesheet）</li>
+            <li>提交代墊費用（Expense Sheet）</li>
+          </ul>
+        </div>
+        <div class="intro-block" style="margin-bottom:0">
+          <h3>HR Portal 平台</h3>
+          <ul>
+            <li>薪資查詢</li>
+            <li>個人資料異動</li>
+            <li>勞退自提</li>
+          </ul>
+          <a href="https://hrportal.adecco.com.tw/hrportal/Prod/Mobile/" target="_blank" rel="noopener"
+             style="display:inline-block;margin-top:14px;font-size:14px;font-weight:500;color:var(--red-accent);text-decoration:none;border:1px solid var(--pink-mid);padding:8px 18px;border-radius:20px">
+            前往 HR Portal →
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- 首次登入 -->
     <div class="content-section">
       <p class="section-label">首次登入</p>
 
-      <!-- Step 1 -->
       <div class="step">
         <div class="step-num">S1</div>
         <div class="step-body">
@@ -87,7 +90,6 @@
         </div>
       </div>
 
-      <!-- Step 2 -->
       <div class="step">
         <div class="step-num">S2</div>
         <div class="step-body">
@@ -98,11 +100,9 @@
             <li>完成後，即代表 Fieldglass 帳號已啟用</li>
             <li>請使用 Username 及新設定的密碼登入 Fieldglass</li>
           </ul>
-          <img src="../images/screenshots/login-help.png" alt="需要登入協助" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
         </div>
       </div>
 
-      <!-- Step 3 -->
       <div class="step">
         <div class="step-num">S3</div>
         <div class="step-body">
@@ -115,7 +115,8 @@
               <div class="info-card-sub">操作路徑：Settings → Time Zone → Asia/Taipei</div>
             </div>
           </div>
-          <img src="../images/screenshots/timezone.png" alt="設定時區" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
+          <p style="font-size:12px;color:var(--text-sub);margin:12px 0 6px">點擊圖片可放大</p>
+          <img class="zoomable" src="../images/screenshots/timezone.png" alt="設定時區" onclick="openZoom(this)" style="width:100%" />
           <div class="note" style="margin-top:16px">
             <strong>⚠️ 重要提醒：</strong>請確認時區為 Asia/Taipei，再開始填寫 Timesheet。
           </div>
@@ -123,10 +124,8 @@
       </div>
     </div>
 
-    <!-- 忘記密碼 -->
     <div class="content-section">
       <p class="section-label">忘記密碼怎麼辦？</p>
-
       <div class="step">
         <div class="step-num">方1</div>
         <div class="step-body">
@@ -142,10 +141,10 @@
             </li>
             <li>至信箱收取重設信件，依指示完成密碼重設</li>
           </ul>
-          <img src="../images/screenshots/login-popup.png" alt="登入協助彈窗" style="width:100%;border-radius:12px;margin-top:16px;border:1px solid rgba(232,170,170,0.4)" />
+          <p style="font-size:12px;color:var(--text-sub);margin:12px 0 6px">點擊圖片可放大</p>
+          <img class="zoomable" src="../images/screenshots/login-popup.png" alt="登入協助彈窗" onclick="openZoom(this)" style="width:100%" />
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">方2</div>
         <div class="step-body">
@@ -155,22 +154,17 @@
       </div>
     </div>
 
-    <!-- 常見問題 -->
     <div class="content-section">
       <p class="section-label">常見登入問題</p>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">找不到開通信件</span>
           <span class="accordion-icon">+</span>
         </button>
         <div class="accordion-body">
-          <div class="accordion-body-inner">
-            請至私人信箱搜尋「Fieldglass」，並一併確認垃圾郵件匣。
-          </div>
+          <div class="accordion-body-inner">請至私人信箱搜尋「Fieldglass」，並一併確認垃圾郵件匣。</div>
         </div>
       </div>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">開通連結已過期</span>
@@ -178,37 +172,27 @@
         </button>
         <div class="accordion-body">
           <div class="accordion-body-inner">
-            請至 Fieldglass 登入頁，點擊「需要登入協助？」，使用數位助理功能選擇「忘記密碼」或「重新傳送邀請」。
-            <img src="../images/screenshots/login-popup.png" alt="登入協助彈窗" />
+            請至 Fieldglass 登入頁，點擊「需要登入協助？」，選擇「忘記密碼」或「重新傳送邀請」。
+            <img class="zoomable" src="../images/screenshots/login-popup.png" alt="登入協助彈窗" onclick="openZoom(this)" style="margin-top:12px;width:100%" />
           </div>
         </div>
       </div>
-
       <div class="accordion">
         <button class="accordion-header">
           <span class="accordion-question">系統登不進去</span>
           <span class="accordion-icon">+</span>
         </button>
         <div class="accordion-body">
-          <div class="accordion-body-inner">
-            月底系統可能較為繁忙，請稍後再嘗試登入。若問題持續，請聯繫藝珂顧問。
-          </div>
+          <div class="accordion-body-inner">月底系統可能較為繁忙，請稍後再嘗試登入。若問題持續，請聯繫藝珂顧問。</div>
         </div>
       </div>
-
     </div>
 
   </div>
 
   <div class="page-nav">
-    <a href="../index.html" class="prev">
-      <span class="nav-direction">← 返回</span>
-      <span class="nav-title">首頁</span>
-    </a>
-    <a href="timesheet.html" class="next">
-      <span class="nav-direction">下一章 →</span>
-      <span class="nav-title">Timesheet</span>
-    </a>
+    <a href="../index.html" class="prev"><span class="nav-direction">← 返回</span><span class="nav-title">首頁</span></a>
+    <a href="timesheet.html" class="next"><span class="nav-direction">下一章 →</span><span class="nav-title">Timesheet</span></a>
   </div>
 
   <footer>
@@ -216,5 +200,10 @@
     <span class="footer-copy">僅供內部使用</span>
   </footer>
   <script src="../js/accordion.js"></script>
+  <script>
+    function openZoom(img){document.getElementById("zoomImg").src=img.src;document.getElementById("zoomOverlay").classList.add("active")}
+    function closeZoom(){document.getElementById("zoomOverlay").classList.remove("active")}
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeZoom()});
+  </script>
 </body>
 </html>

@@ -12,6 +12,11 @@
     .zoom-overlay img{max-width:92vw;max-height:92vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5)}
     .zoomable{cursor:zoom-in;transition:transform 0.2s;border-radius:12px;display:block;border:1px solid rgba(232,170,170,0.4)}
     .zoomable:hover{transform:scale(1.015);box-shadow:0 8px 32px rgba(44,61,90,0.15)}
+    .zoom-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out}
+    .zoom-overlay.active{display:flex}
+    .zoom-overlay img{max-width:92vw;max-height:92vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5)}
+    .zoomable{cursor:zoom-in;transition:transform 0.2s;border-radius:12px;display:block;border:1px solid rgba(232,170,170,0.4)}
+    .zoomable:hover{transform:scale(1.015);box-shadow:0 8px 32px rgba(44,61,90,0.15)}
 
     /* Left sticky nav - same as timesheet */
     .exp-layout{display:grid;grid-template-columns:200px 1fr;gap:32px;max-width:960px;margin:0 auto;padding:56px 24px 80px;align-items:start}
@@ -72,6 +77,9 @@
     <img id="zoomImg" src="" alt="" />
   </div>
 
+  <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImg" src="" alt="" />
+  </div>
   <header>
     <a class="logo" href="../index.html">Fieldglass <span>手冊</span></a>
     <nav>
@@ -143,7 +151,9 @@
               <span class="flow-arrow-h">→</span>
               <div class="flow-bubble-h">Expense Sheet</div>
             </div>
-            <div class="img-placeholder" style="margin-top:16px">截圖 — 待上傳</div>
+            <div class="note" style="margin-top:16px">
+              <strong>同個月的費用</strong>可以寫在同一份 Expense Sheet，不需要每筆費用各開一份。
+            </div>
           </div>
         </div>
       </div>
@@ -241,7 +251,7 @@
             <span class="accordion-icon">+</span>
           </button>
           <div class="accordion-body">
-            <div class="accordion-body-inner">說明內容待填入，請聯繫薪酬窗口協助處理。</div>
+            <div class="accordion-body-inner">此筆費用將列入應稅，請務必在消費時要求廠商開立統編 <strong>84900645</strong> 的發票。</div>
           </div>
         </div>
       </div>
@@ -258,7 +268,6 @@
             <div class="note" style="background:#fff0f0;border-color:var(--red-accent)">
               <strong>⚠️ 重要：</strong>送出後無法自行修改。若需修改請聯繫薪酬窗口協助。
             </div>
-            <div class="img-placeholder" style="margin-top:16px">截圖 — 待上傳</div>
           </div>
         </div>
 
@@ -266,11 +275,12 @@
           <div class="step-num">→</div>
           <div class="step-body">
             <h3>列印 Expense Sheet</h3>
-            <p>狀態變為 <strong>Approved</strong> 後，點擊列印圖示印出完整的 Expense Sheet。</p>
+            <p>狀態變為 <strong>Invoiced</strong> 後，點擊列印圖示印出完整的 Expense Sheet。</p>
             <div class="note">
-              <strong>提醒：</strong>請等狀態變為 Approved 後再列印，確保版本正確。
+              <strong>提醒：</strong>請等狀態變為 Invoiced 後再列印，確保版本正確。
             </div>
-            <div class="img-placeholder" style="margin-top:16px">截圖 — 待上傳</div>
+            <p style="font-size:12px;color:var(--text-sub);margin:12px 0 6px">點擊圖片可放大</p>
+            <img src="../images/screenshots/expense-print.png" alt="列印 Expense Sheet" class="zoomable" onclick="openZoom(this)" style="width:100%" />
           </div>
         </div>
       </div>
@@ -292,7 +302,6 @@
               <li>平鋪黏貼，<strong>不可重疊</strong>、不可超出紙張邊緣</li>
               <li>不可遮蓋<strong>金額、日期、統編</strong>等重要資訊</li>
               <li>每張單據清楚可見，不使用訂書針或迴紋針</li>
-              <li>在單據上或旁邊寫上<strong>申請人姓名</strong></li>
             </ul>
           </div>
         </div>
@@ -342,7 +351,7 @@
             <div class="error-body-inner">
               沒有 Expense Sheet，我們無法知道是誰申請、對應哪些費用，<strong>整份退件</strong>。<br><br>
               Expense Sheet 和單據必須一起寄出，缺一不受理。
-              <div class="img-placeholder" style="margin-top:12px">錯誤示範截圖 — 待上傳</div>
+              
             </div>
           </div>
         </div>
@@ -356,7 +365,7 @@
             <div class="error-body-inner">
               單據散落或只用迴紋針夾，在郵寄過程中容易遺失，也難以核對金額。<br><br>
               請將所有單據平整黏貼於 A4 白紙上再寄出。
-              <div class="img-placeholder" style="margin-top:12px">錯誤示範截圖 — 待上傳</div>
+              
             </div>
           </div>
         </div>
@@ -370,7 +379,7 @@
             <div class="error-body-inner">
               金額、日期、統編被遮住，我們無法核對，<strong>會退件要求重新整理</strong>。<br><br>
               每張單據必須清楚可見，不可相互重疊。
-              <div class="img-placeholder" style="margin-top:12px">錯誤示範截圖 — 待上傳</div>
+              
             </div>
           </div>
         </div>
@@ -384,7 +393,7 @@
             <div class="error-body-inner">
               超出紙張的部分在郵寄過程中容易折損或遺失。<br><br>
               請確認所有單據都在 A4 紙張範圍內，若單據過大請折疊後再黏貼。
-              <div class="img-placeholder" style="margin-top:12px">錯誤示範截圖 — 待上傳</div>
+              
             </div>
           </div>
         </div>
@@ -398,7 +407,7 @@
             <div class="error-body-inner">
               未打統編的發票視同個人消費，<strong>無法作為公司報帳憑證</strong>。<br><br>
               請務必在消費時要求廠商開立統編 <strong>84900645</strong> 的發票。若已開立忘記打統編，請聯繫薪酬窗口確認處理方式。
-              <div class="img-placeholder" style="margin-top:12px">錯誤示範截圖 — 待上傳</div>
+              
             </div>
           </div>
         </div>
@@ -424,6 +433,9 @@
     function closeZoom(){document.getElementById("zoomOverlay").classList.remove("active")}
     document.addEventListener("keydown",e=>{if(e.key==="Escape")closeZoom()});
 
+    function openZoom(img){document.getElementById("zoomImg").src=img.src;document.getElementById("zoomOverlay").classList.add("active")}
+    function closeZoom(){document.getElementById("zoomOverlay").classList.remove("active")}
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeZoom()});
     function toggleError(btn){
       const acc=btn.closest(".error-accordion");
       const body=acc.querySelector(".error-body");
